@@ -1,0 +1,24 @@
+{
+  "name": "TAM_test",
+  "version": "1.0.0",
+  "description": "this is a test",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev" : "nodedemon src/index.js" 
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jgarvs/TAM_test.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jgarvs/TAM_test/issues"
+  },
+  "homepage": "https://github.com/jgarvs/TAM_test#readme",
+  "dependencies": {
+    "express": "^4.17.2"
+  }
+}
