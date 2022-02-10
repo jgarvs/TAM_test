@@ -6,30 +6,45 @@ const db = require('./db');
 const typeDefs = require('./schema');
 const models = require('./models');
 const resolvers = require('./resolvers');
+const jwt = require('jsonwebtoken');
+const { graphqlUploadExpress } = require('graphql-upload');
 
 const port = process.env.PORT || 4000;
 const DB_HOST = process.env.DB_HOST;
 
-const app = express();
-
 db.connect(DB_HOST);
 
-let apolloServer = null;
-async function startServer() {
-    apolloServer = new ApolloServer({
-        typeDefs,
-        resolvers,
-        context: () => {
-                return { models };
+const getUser = token => {
+        if(token){
+                try{
+                        return jwt.verify(token, process.env.JWT_SECRET);
+                } catch (err) {
+                        throw new Error('Session invalid')
+                }
         }
-    });
-    await apolloServer.start();
-    apolloServer.applyMiddleware({ app, path: '/api' });
 }
 
-startServer();
+async function startApolloServer(typeDefs, resolvers, models){
+        let apolloServer = new ApolloServer({
+                typeDefs,
+                resolvers,
+                context: ({ req }) => {
+                        const token = req.headers.authorization;
+                        const user = getUser(token);
+                        //console.log(user);
+                        return { models , user};
+                }
+        });
+        const app = express();
+        await apolloServer.start();
 
-app.listen({ port }, () => 
-        console.log(`GraphSQL Server running at http://localhost:${port}${apolloServer.graphqlPath}`
-        )
-);
+        app.use(graphqlUploadExpress());
+
+        apolloServer.applyMiddleware({ app, path: '/api' });
+
+        app.listen({ port }, () => 
+                console.log(`GraphSQL Server running at http://localhost:${port}${apolloServer.graphqlPath}`)
+        );
+}
+
+startApolloServer(typeDefs, resolvers, models);

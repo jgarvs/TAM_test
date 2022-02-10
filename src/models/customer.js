@@ -14,11 +14,13 @@ const customerSchema = new mongoose.Schema({
                 required: false 
         },
         creator:{
-                type: String,
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User',
                 required: false 
         },
         modifier:{
-                type: String,
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User',
                 required: false 
         }
 
