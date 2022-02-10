@@ -8,6 +8,8 @@ const models = require('./models');
 const resolvers = require('./resolvers');
 const jwt = require('jsonwebtoken');
 const { graphqlUploadExpress } = require('graphql-upload');
+const helmet = require('helmet');
+const cors = require('cors');
 
 const port = process.env.PORT || 4000;
 const DB_HOST = process.env.DB_HOST;
@@ -36,9 +38,12 @@ async function startApolloServer(typeDefs, resolvers, models){
                 }
         });
         const app = express();
-        await apolloServer.start();
-
+        app.use(helmet());
+        app.use(cors());
         app.use(graphqlUploadExpress());
+
+        await apolloServer.start();
+        
 
         apolloServer.applyMiddleware({ app, path: '/api' });
 
