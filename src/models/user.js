@@ -1,4 +1,5 @@
 const mongoose = require ('mongoose');
+const mongooseHidden = require('mongoose-hidden')({ defaultHidden: { } })
 
 const userSchema = new mongoose.Schema({
         name: {
@@ -21,13 +22,16 @@ const userSchema = new mongoose.Schema({
         },
         password: {
                 type: String,
-                required: true 
+                required: true,
+                hide: true
         }
 
 },
 {
         timestamps: true
 });
+
+userSchema.plugin(mongooseHidden);
 
 const User = mongoose.model('user', userSchema);
 

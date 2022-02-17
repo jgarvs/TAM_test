@@ -4,7 +4,7 @@
   "description": "this is a test",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "dev": "nodemon src/index.js"
   },
   "repository": {
@@ -27,10 +27,13 @@
     "graphql": "^16.3.0",
     "graphql-upload": "^13.0.0",
     "helmet": "^5.0.2",
+    "isemail": "^3.2.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.2.1"
+    "mongoose": "^6.2.1",
+    "mongoose-hidden": "^1.9.1"
   },
   "devDependencies": {
+    "jest": "^27.5.1",
     "nodemon": "^2.0.15"
   }
 }

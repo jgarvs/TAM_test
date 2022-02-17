@@ -2,17 +2,53 @@ const mongoose = require ('mongoose');
 require('dotenv').config();
 const fs = require('fs');
 
-const {
-        GraphQLUpload,
-        graphqlUploadExpress, // A Koa implementation is also exported.
-      } = require('graphql-upload');
+const models = require('../models');
+const Validator = require('../validator');
+
 
 
 module.exports = {
-        createCustomer: async (parent, {name, surname, photoField}, { models, user }) => {
-
+        customers: async (user) => {
                 if(!user){
                         throw new AuthenticationError('you must be signed in to create a customer');
+                }
+
+                try {
+                        return await models.Customer.find();
+                }catch (err){
+                        throw new Error('no customers where found');
+                }
+        },
+        customer: async (id, user) => {
+                //TODO: validate id
+                if(!user){
+                        throw new Error('you must be signed in to create a customer');
+                }
+
+                try{
+                        let foundCustomer = await models.Customer.findById(id);
+
+                        if(!foundCustomer){
+                                throw new Error('customer not found');
+                        }
+
+                        return foundCustomer;
+                } catch (err){
+                        throw new Error('customer not found');
+                }
+        },
+        createCustomer: async (name, surname, photoField, user) => {
+
+                if(Validator.isNotValidName(name)){
+                        throw new Error('invalid name ' + name);
+                }
+
+                if(Validator.isNotValidSurname(surname)){
+                        throw new Error('invalid surname ' + surname);
+                }
+
+                if(!user){
+                        throw new Error('you must be signed in to create a customer');
                 }
 
                 let customerValue = {
@@ -24,21 +60,22 @@ module.exports = {
                 };
                 return await models.Customer.create(customerValue);
         },
-        deleteCustomer: async (parent, {id}, { models, user  }) => {
+        deleteCustomer: async (id,user) => {
                 if(!user){
-                        throw new AuthenticationError('you must be signed in to delete a customer');
+                        throw new Error('you must be signed in to delete a customer');
                 }
 
                 try {
-                        await models.Customer.findOneAndRemove({ _id: id});
-                        return true;
+                        let found = await models.Customer.findOneAndRemove({ _id: id});
+                        return {success:found != null};
                 } catch (err) {
-                        return false;
+                        return {success:false};
                 }
         },
-        updateCustomer: async (parent, {id, name, surname, photoField}, {models, user }) => {
+        updateCustomer: async (id, name, surname, photoField, user ) => {
+
                 if(!user){
-                        throw new AuthenticationError('you must be signed in to update a customer');
+                        throw new Error('you must be signed in to update a customer');
                 }
 
                 if(!name && !surname && !photoField){
@@ -47,10 +84,16 @@ module.exports = {
 
                 let setContainer = {}
                 if(name){
+                        if(Validator.isNotValidName(name)){
+                                throw new Error('invalid name');
+                        }
                         setContainer.name = name;
                 }
 
                 if(surname){
+                        if(Validator.isNotValidSurname(surname)){
+                                throw new Error('invalid surname');
+                        }
                         setContainer.surname = surname;
                 }
 
@@ -61,11 +104,17 @@ module.exports = {
                 setContainer.modifier = mongoose.Types.ObjectId(user.id);
                 
                 try{
-                        return await models.Customer.findOneAndUpdate(
+                        let updatedCustomer = await models.Customer.findOneAndUpdate(
                                 { _id: id },
                                 { $set: setContainer },
                                 { new: true }
                         );
+
+                        if(!updatedCustomer){
+                                throw new Error('customer not found');
+                        }
+
+                        return updatedCustomer
                 } catch (err){
                         console.log(err);
                         throw new Error('Error updating account')
@@ -74,7 +123,7 @@ module.exports = {
         },
         updateCustomerImage: async (parent, { id, file }, {models, user })=>{
                 if(!user){
-                        throw new AuthenticationError('you must be signed in to update a customer');
+                        throw new Error('you must be signed in to update a customer');
                 }
 
                 setContainer.modifier = mongoose.Types.ObjectId(user.id);

@@ -1,55 +1,32 @@
 const express = require('express');
-const {ApolloServer} = require('apollo-server-express');
 require('dotenv').config();
 
 const db = require('./db');
-const typeDefs = require('./schema');
-const models = require('./models');
-const resolvers = require('./resolvers');
-const jwt = require('jsonwebtoken');
-const { graphqlUploadExpress } = require('graphql-upload');
 const helmet = require('helmet');
 const cors = require('cors');
+
+const tokenValidator = require('./tokenValidator');
 
 const port = process.env.PORT || 4000;
 const DB_HOST = process.env.DB_HOST;
 
 db.connect(DB_HOST);
 
-const getUser = token => {
-        if(token){
-                try{
-                        return jwt.verify(token, process.env.JWT_SECRET);
-                } catch (err) {
-                        throw new Error('Session invalid')
-                }
-        }
-}
+const app = express();
+app.use(express.json());
+app.set('port', port);
 
-async function startApolloServer(typeDefs, resolvers, models){
-        let apolloServer = new ApolloServer({
-                typeDefs,
-                resolvers,
-                context: ({ req }) => {
-                        const token = req.headers.authorization;
-                        const user = getUser(token);
-                        //console.log(user);
-                        return { models , user};
-                }
-        });
-        const app = express();
-        app.use(helmet());
-        app.use(cors());
-        app.use(graphqlUploadExpress());
+app.use(helmet());
+app.use(cors());
 
-        await apolloServer.start();
-        
+//app.use(express.urlencoded({extended: false}));
 
-        apolloServer.applyMiddleware({ app, path: '/api' });
 
-        app.listen({ port }, () => 
-                console.log(`GraphSQL Server running at http://localhost:${port}${apolloServer.graphqlPath}`)
-        );
-}
+app.use(require('./routes/index'));
+app.use('/api/login', require('./routes/login'));
+app.use('/api/customers', tokenValidator.validate, require('./routes/customers'));
+app.use('/api/users', require('./routes/users'));
 
-startApolloServer(typeDefs, resolvers, models);
+app.listen(app.get('port'), () => 
+console.log(`GraphSQL Server running at http://localhost:${app.get('port')}`)
+);
