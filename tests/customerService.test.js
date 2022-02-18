@@ -17,7 +17,7 @@ describe("test customer service", () => {
                 await customerModel.deleteMany({});
                 await userModel.deleteMany({});
 
-                payload = {
+                let payload = {
                         name: "tester",
                         surname: "tester",
                         username: "supertester",
