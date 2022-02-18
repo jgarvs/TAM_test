@@ -1,7 +1,6 @@
-class CustomErrorHandler{
-        errorFound (err){
-                console.error(err);
-                return {message:'we found an error'}
+class CustomErrorHandler {
+        errorFound(err) {
+                return { message: 'we found an error' }
         }
 }
 

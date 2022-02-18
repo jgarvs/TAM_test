@@ -88,6 +88,15 @@ describe("test customer API", () => {
 
                                 expect(customers.length).toBe(0);
                         });
+
+                        test("try to send bad token", async () => {
+                                const badToken = "asdlklsadfasdjfjjqjqewfjfsdn.alfkjkfsdasfj"
+                                const response = await request(app).get('/api/customers')
+                                        .set('Authorization', badToken)
+
+                                let body = response.body;
+                                expect(body).toEqual({ message: 'we found an error' });
+                        });
                 });
         });
 });
