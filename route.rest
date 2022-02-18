@@ -1,0 +1,119 @@
+###
+POST http://localhost:4000/1234
+Content-Type: multipart/form-data; boundary=MyBoundary
+
+--MyBoundary
+Content-Disposition: form-data; name="file"; filename="1234.png"
+Content-Type: application/octet-stream
+
+< .\1.png
+--MyBoundary--
+
+
+###
+
+
+#  @name login
+POST http://localhost:4000/api/login
+content-type: application/json
+
+{
+        "username" : "testUserUsername",
+        "password" : "qqqAAA11%%"
+}
+
+###
+
+@authToken = {{login.response.body.token}}
+###
+
+GET http://localhost:4000/api/customers
+Authorization: {{authToken}}
+
+###
+GET http://localhost:4000/api/customers/6204454c93f1447f2f28e674
+Authorization: {{authToken}}
+
+###
+POST http://localhost:4000/api/customers
+content-type: application/json
+Authorization: {{authToken}}
+
+{
+        "name":"myCustomerAA",
+        "surname":"myCustomerAA"
+}
+
+
+###
+
+PATCH http://localhost:4000/api/customers/620f9cdf4891b90ecd013db8
+content-type: application/json
+Authorization: {{authToken}}
+
+
+{
+        "name":"myCustomerBB",
+        "surname":"myCustomerBB"
+}
+
+###
+
+PATCH http://localhost:4000/api/customers/620f9cdf4891b90ecd013db8
+Authorization: {{authToken}}
+Content-Type: multipart/form-data; boundary=MyBoundary
+
+--MyBoundary
+Content-Disposition: form-data; name="file"; filename="1.png"
+Content-Type: application/octet-stream
+
+< .\1.png
+--MyBoundary--
+
+###
+
+DELETE http://localhost:4000/api/customers/6204454c93f1447f2f28e674
+Authorization: {{authToken}}
+
+
+
+
+
+
+###
+GET http://localhost:4000/api/users
+Authorization: {{authToken}}
+
+###
+GET http://localhost:4000/api/users/62051ef97d2458e4cea7df59
+Authorization: {{authToken}}
+
+###
+POST  http://localhost:4000/api/users
+content-type: application/json
+Authorization: {{authToken}}
+
+{
+        "name" : "testUserNameNN",
+        "surname" : "testUserSurnameNN",
+        "username" : "testUserUsernameNN",
+        "email" : "aaaaNN@bbbb.cccc",
+        "password" : "qqqAAA11%%"
+}
+
+###
+PATCH http://localhost:4000/api/users/620ef7831b980437c723a4e0
+content-type: application/json
+Authorization: {{authToken}}
+
+{
+        "name" : "testUserNameCUA",
+        "surname" : "testUserSurnameCUA",
+        "username" : "testUserUsernameCUA",
+        "email" : "aaaa@bbbb.ccccCUA",
+        "password" : "qqqAAA11%%CUA"
+}
+
+###
+DELETE http://localhost:4000/api/users/620ef7831b980437c723a4e0
+Authorization: {{authToken}}
