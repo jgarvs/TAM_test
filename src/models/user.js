@@ -1,5 +1,6 @@
 const mongoose = require ('mongoose');
 const mongooseHidden = require('mongoose-hidden')({ defaultHidden: { __v: true } })
+const { ROLE }  = require('../roles');
 
 const userSchema = new mongoose.Schema({
         name: {
@@ -24,6 +25,11 @@ const userSchema = new mongoose.Schema({
                 type: String,
                 required: true,
                 hide: true
+        },
+        role: {
+                type: String,
+                required: true,
+                default: ROLE.ADMIN
         }
 
 },

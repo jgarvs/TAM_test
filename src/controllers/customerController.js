@@ -3,7 +3,7 @@ require('dotenv').config();
 const fs = require('fs');
 
 const models = require('../models');
-const Validator = require('../validator');
+const validator = require('../validator');
 const depurator = require('../depurator');
 
 
@@ -36,11 +36,11 @@ module.exports = {
         },
         createCustomer: async (name, surname, photoField, file, activeUser) => {
 
-                if(Validator.isNotValidName(name)){
+                if(validator.isNotValidName(name)){
                         throw new Error('bad request ' + name);
                 }
 
-                if(Validator.isNotValidSurname(surname)){
+                if(validator.isNotValidSurname(surname)){
                         throw new Error('bad request');
                 }
 
@@ -61,11 +61,12 @@ module.exports = {
 
                         let newCustomer = await models.Customer.create(customerValue);
 
-                        let fileName = file.name;
-                        let userFolder = newCustomer._id; //TODO:encrypt user folder this
-                        const pathName = path.join(__dirname, `../../public/images/${userFolder}/${fileName}`);
-                        await file.mv(pathName,fileName);
-
+                        if(file){
+                                let fileName = file.name;
+                                let userFolder = newCustomer._id; //TODO:encrypt user folder this
+                                const pathName = path.join(__dirname, `../../public/images/${userFolder}/${fileName}`);
+                                await file.mv(pathName,fileName);
+                        }
                         return newCustomer;
                 }catch(err){
 
@@ -84,7 +85,7 @@ module.exports = {
                         return {success:false};
                 }
         },
-        updateCustomer: async (id, name, surname, photoField, activeUser ) => {
+        updateCustomer: async (id, name, surname, photoField, role, file, activeUser ) => {
 
                 if(validator.isNotValidId(id)){
                         throw new Error('bad request');
@@ -96,17 +97,24 @@ module.exports = {
 
                 let setContainer = {}
                 if(name){
-                        if(Validator.isNotValidName(name)){
+                        if(validator.isNotValidName(name)){
                                 throw new Error('bad request');
                         }
                         setContainer.name = name;
                 }
 
                 if(surname){
-                        if(Validator.isNotValidSurname(surname)){
+                        if(validator.isNotValidSurname(surname)){
                                 throw new Error('bad request');
                         }
                         setContainer.surname = surname;
+                }
+
+                if(role){
+                        if(validator.isNotValidRole(surname)){
+                                throw new Error('bad request');
+                        }
+                        setContainer.role = role;
                 }
 
                 if(photoField){
@@ -124,6 +132,13 @@ module.exports = {
 
                         if(!updatedCustomer){
                                 throw new Error('bad request');
+                        }
+
+                        if(file){
+                                let fileName = file.name;
+                                let userFolder = newCustomer._id; //TODO:encrypt user folder this
+                                const pathName = path.join(__dirname, `../../public/images/${userFolder}/${fileName}`);
+                                await file.mv(pathName,fileName);
                         }
 
                         return updatedCustomer

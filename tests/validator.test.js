@@ -1,5 +1,34 @@
-const Validator = require('../src/validator')
+const Validator = require('../src/validator');
+const { ROLE } = require('../src/roles');
 
+describe("Validator validate role", ()=>{
+        test("valid role Admin", ()=>{
+                const testCaseRole = ROLE.ADMIN;
+                const result = Validator.isValidRole(testCaseRole);
+                expect(result).toBe(true);
+
+                const negateResult = Validator.isNotValidRole(testCaseRole);
+                expect(negateResult).toBe(false);
+        });
+
+        test("valid role Basic", ()=>{
+                const testCaseRole = ROLE.BASIC;
+                const result = Validator.isValidRole(testCaseRole);
+                expect(result).toBe(true);
+
+                const negateResult = Validator.isNotValidRole(testCaseRole);
+                expect(negateResult).toBe(false);
+        });
+
+        test("invalid role Hacker", ()=>{
+                const testCaseRole = "Hacker";
+                const result = Validator.isValidRole(testCaseRole);
+                expect(result).toBe(false);
+
+                const negateResult = Validator.isNotValidRole(testCaseRole);
+                expect(negateResult).toBe(true);
+        });
+});
 
 describe("Validator validate id", () => {
 

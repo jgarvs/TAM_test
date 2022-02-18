@@ -1,4 +1,5 @@
 const Isemail = require('isemail');
+const { ROLE } = require('./roles');
 
 const PASSWORD_LEN = 8;
 const USERNAME_LEN = 8;
@@ -59,6 +60,13 @@ class Validator{
                 return this.isValidName(username) && username.length >= USERNAME_LEN;
         }
 
+
+        isValidRole(role){
+                let roles = Object.values(ROLE);
+                return roles.some((item) => {return role === item});
+        }
+
+
         isNotValidId(id){
                 return !this.isValidId(id);
         }
@@ -83,6 +91,9 @@ class Validator{
                 return !this.isValidUsername(username);
         }
 
+        isNotValidRole(role){
+                return !this.isValidRole(role);
+        }
         //TODO:photoField
 
 }
