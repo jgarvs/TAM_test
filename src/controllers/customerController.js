@@ -1,6 +1,7 @@
 const mongoose = require ('mongoose');
 require('dotenv').config();
 const fs = require('fs');
+var path = require('path');
 
 const models = require('../models');
 const validator = require('../validator');
@@ -83,7 +84,7 @@ module.exports = {
                         throw new Error('bad request');
                 }
 
-                if(!name && !surname && !photoField && !role && !file){
+                if(!name && !surname && !role && !file){
                         throw new Error('bad request');
                 }
 
@@ -114,7 +115,7 @@ module.exports = {
                 try{
                         if(file){
                                 let fileName = file.name;
-                                let userFolder = newCustomer._id; //TODO:encrypt user folder this
+                                let userFolder = id; //TODO:encrypt user folder this
                                 let photoField = `${userFolder}_${fileName}`;
                                 setContainer.photoField = photoField;
                                 const pathName = path.join(__dirname, `../../public/images/${photoField}`);
