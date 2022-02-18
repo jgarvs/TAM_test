@@ -61,6 +61,19 @@ update a customer
 return updated customer
 or {message:error}
 
+also
+
+PATCH http://localhost:4000/api/customers/:id
+Content-Type: multipart/form-data; boundary=MyBoundary
+
+--MyBoundary
+Content-Disposition: form-data; name="file"; filename="1234.png"
+Content-Type: application/octet-stream
+
+< .\1.png
+--MyBoundary--
+you can upload a photo if you send the id and don't send an application/json
+
 ###
 
 DELETE http://localhost:4000/api/customers/:id

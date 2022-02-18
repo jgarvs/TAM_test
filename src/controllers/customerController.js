@@ -34,7 +34,7 @@ module.exports = {
                         throw new Error('bad request');
                 }
         },
-        createCustomer: async (name, surname, photoField, file, activeUser) => {
+        createCustomer: async (name, surname, activeUser) => {
 
                 if(validator.isNotValidName(name)){
                         throw new Error('bad request ' + name);
@@ -52,7 +52,6 @@ module.exports = {
                 let customerValue = {
                         name: filterName,
                         surname: filterSurname,
-                        photoField: photoField || "https://www.blah.com/myPhoto", //TODO: Validate
                         creator:mongoose.Types.ObjectId(activeUser.id),
                         modifier:mongoose.Types.ObjectId(activeUser.id)
                 };
@@ -60,13 +59,6 @@ module.exports = {
                 try{
 
                         let newCustomer = await models.Customer.create(customerValue);
-
-                        if(file){
-                                let fileName = file.name;
-                                let userFolder = newCustomer._id; //TODO:encrypt user folder this
-                                const pathName = path.join(__dirname, `../../public/images/${userFolder}/${fileName}`);
-                                await file.mv(pathName,fileName);
-                        }
                         return newCustomer;
                 }catch(err){
 
@@ -85,13 +77,13 @@ module.exports = {
                         return {success:false};
                 }
         },
-        updateCustomer: async (id, name, surname, photoField, role, file, activeUser ) => {
+        updateCustomer: async (id, name, surname, role, file, activeUser ) => {
 
                 if(validator.isNotValidId(id)){
                         throw new Error('bad request');
                 }
 
-                if(!name && !surname && !photoField){
+                if(!name && !surname && !photoField && !role && !file){
                         throw new Error('bad request');
                 }
 
@@ -117,13 +109,18 @@ module.exports = {
                         setContainer.role = role;
                 }
 
-                if(photoField){
-                        setContainer.surname = photoField;
-                }
-
                 setContainer.modifier = mongoose.Types.ObjectId(activeUser.id);
                 
                 try{
+                        if(file){
+                                let fileName = file.name;
+                                let userFolder = newCustomer._id; //TODO:encrypt user folder this
+                                let photoField = `${userFolder}_${fileName}`;
+                                setContainer.photoField = photoField;
+                                const pathName = path.join(__dirname, `../../public/images/${photoField}`);
+                                await file.mv(pathName,fileName);
+                        }
+
                         let updatedCustomer = await models.Customer.findOneAndUpdate(
                                 { _id: id },
                                 { $set: setContainer },
@@ -132,13 +129,6 @@ module.exports = {
 
                         if(!updatedCustomer){
                                 throw new Error('bad request');
-                        }
-
-                        if(file){
-                                let fileName = file.name;
-                                let userFolder = newCustomer._id; //TODO:encrypt user folder this
-                                const pathName = path.join(__dirname, `../../public/images/${userFolder}/${fileName}`);
-                                await file.mv(pathName,fileName);
                         }
 
                         return updatedCustomer

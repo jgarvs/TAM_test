@@ -28,15 +28,9 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res)=>{
         let name = req.body.name;
         let surname = req.body.surname;
-        let photoField = req.body.photoField;
-
-        let file
-        if(req.files && req.files.file){
-                file = req.files.file; 
-        }
 
         try{
-                let response = await CustomerController.createCustomer(name, surname, photoField, file, res.activeUser);
+                let response = await CustomerController.createCustomer(name, surname, res.activeUser);
                 res.status(201).json(response);
         } catch (err){
                 res.status(400).json(errors.errorFound(err));
@@ -47,7 +41,6 @@ router.patch('/:id', async (req, res)=>{
         let id = req.params.id;
         let name = req.body.name;
         let surname = req.body.surname;
-        let photoField = req.body.photoField;
         let role = req.body.role;
 
         let file
@@ -56,7 +49,7 @@ router.patch('/:id', async (req, res)=>{
         }
 
         try{
-                let response = await CustomerController.updateCustomer(id, name, surname, photoField, role, file, res.activeUser);
+                let response = await CustomerController.updateCustomer(id, name, surname, role, file, res.activeUser);
                 res.json(response);
         } catch (err){
                 res.status(400).json(errors.errorFound(err));
