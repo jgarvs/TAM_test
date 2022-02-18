@@ -1,16 +1,16 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-const models = require('../models');
 const validator = require('../validator');
 const depurator = require('../depurator');
+
+const userService = require('../services/user');
 
 
 module.exports = {
         users: async () => {
                 try {
-                        return await models.User.find();
+                        return await userService.list();
                 }catch (err){
                         throw new Error('bad request');
                 }
@@ -21,7 +21,7 @@ module.exports = {
                 }
 
                 try{
-                        let foundCustomer = await models.User.findById(id);
+                        let foundCustomer = await userService.findById(id);
 
                         if(!foundCustomer){
                                 throw new Error('bad request');
@@ -64,9 +64,9 @@ module.exports = {
                                 username: filterUsername,
                                 password: hashed
                         }
-                        const newUser = await models.User.create(newUserData);
+                        const newUser = await userService.create(newUserData);
 
-                        return {success:newUser != null};
+                        return newUser;
                 } catch (err) {
                         console.log(err);
                         throw new Error('bad request')
@@ -79,7 +79,7 @@ module.exports = {
                 }
 
                 try {
-                        let found = await models.User.findOneAndRemove({ _id: id});
+                        let found = await userService.delete(id);
                         return {success:found != null};
                 } catch (err) {
                         return {success:false};
@@ -133,11 +133,7 @@ module.exports = {
                 }
 
                 try{
-                        let updatedUser = await models.User.findOneAndUpdate(
-                                { _id: id },
-                                { $set: setContainer },
-                                { new: true }
-                        );
+                        let updatedUser = await userService.update(id,setContainer);
 
                         if(!updatedUser){
                                 throw new Error('bad request');

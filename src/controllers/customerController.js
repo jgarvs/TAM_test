@@ -1,11 +1,10 @@
 const mongoose = require ('mongoose');
 require('dotenv').config();
-const fs = require('fs');
 var path = require('path');
 
-const models = require('../models');
 const validator = require('../validator');
 const depurator = require('../depurator');
+const customerService = require('../services/customer');
 
 
 
@@ -13,7 +12,7 @@ module.exports = {
         customers: async () => {
 
                 try {
-                        return await models.Customer.find();
+                        return await customerService.list();
                 }catch (err){
                         throw new Error('bad request');
                 }
@@ -24,7 +23,7 @@ module.exports = {
                 }
 
                 try{
-                        let foundCustomer = await models.Customer.findById(id);
+                        let foundCustomer = await customerService.findById(id);
 
                         if(!foundCustomer){
                                 throw new Error('bad request');
@@ -59,7 +58,7 @@ module.exports = {
 
                 try{
 
-                        let newCustomer = await models.Customer.create(customerValue);
+                        let newCustomer = await customerService.create(customerValue);
                         return newCustomer;
                 }catch(err){
 
@@ -72,7 +71,7 @@ module.exports = {
                 }
 
                 try {
-                        let found = await models.Customer.findOneAndRemove({ _id: id});
+                        let found = await customerService.delete(id);
                         return {success:found != null};
                 } catch (err) {
                         return {success:false};
@@ -122,11 +121,7 @@ module.exports = {
                                 await file.mv(pathName,fileName);
                         }
 
-                        let updatedCustomer = await models.Customer.findOneAndUpdate(
-                                { _id: id },
-                                { $set: setContainer },
-                                { new: true }
-                        );
+                        let updatedCustomer = await customerService.update(id,setContainer);
 
                         if(!updatedCustomer){
                                 throw new Error('bad request');

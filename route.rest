@@ -31,7 +31,7 @@ GET http://localhost:4000/api/customers
 Authorization: {{authToken}}
 
 ###
-GET http://localhost:4000/api/customers/6204454c93f1447f2f28e674
+GET http://localhost:4000/api/customers/62050775e58f558300956fd8
 Authorization: {{authToken}}
 
 ###
@@ -40,26 +40,26 @@ content-type: application/json
 Authorization: {{authToken}}
 
 {
-        "name":"myCustomerAA",
-        "surname":"myCustomerAA"
+        "name":"myCustomerCC",
+        "surname":"myCustomerCC"
 }
 
 
 ###
 
-PATCH http://localhost:4000/api/customers/620f9cdf4891b90ecd013db8
+PATCH http://localhost:4000/api/customers/620fb674d1331c9191545885
 content-type: application/json
 Authorization: {{authToken}}
 
 
 {
-        "name":"myCustomerBB",
-        "surname":"myCustomerBB"
+        "name":"myCustomerDD",
+        "surname":"myCustomerDD"
 }
 
 ###
 
-PATCH http://localhost:4000/api/customers/620f9cdf4891b90ecd013db8
+PATCH http://localhost:4000/api/customers/620fb674d1331c9191545885
 Authorization: {{authToken}}
 Content-Type: multipart/form-data; boundary=MyBoundary
 
@@ -72,7 +72,7 @@ Content-Type: application/octet-stream
 
 ###
 
-DELETE http://localhost:4000/api/customers/6204454c93f1447f2f28e674
+DELETE http://localhost:4000/api/customers/620fb674d1331c9191545885
 Authorization: {{authToken}}
 
 
@@ -94,26 +94,26 @@ content-type: application/json
 Authorization: {{authToken}}
 
 {
-        "name" : "testUserNameNN",
-        "surname" : "testUserSurnameNN",
-        "username" : "testUserUsernameNN",
-        "email" : "aaaaNN@bbbb.cccc",
+        "name" : "testUserNameAA",
+        "surname" : "testUserSurnameAA",
+        "username" : "testUserUsernameAA",
+        "email" : "aaaa111@bbbb.cccc",
         "password" : "qqqAAA11%%"
 }
 
 ###
-PATCH http://localhost:4000/api/users/620ef7831b980437c723a4e0
+PATCH http://localhost:4000/api/users/620fb6f7d1331c9191545897
 content-type: application/json
 Authorization: {{authToken}}
 
 {
-        "name" : "testUserNameCUA",
-        "surname" : "testUserSurnameCUA",
-        "username" : "testUserUsernameCUA",
-        "email" : "aaaa@bbbb.ccccCUA",
+        "name" : "testUserNameCUB",
+        "surname" : "testUserSurnameCUB",
+        "username" : "testUserUsernameCUB",
+        "email" : "aaaa@bbbb.ccccCUB",
         "password" : "qqqAAA11%%CUA"
 }
 
 ###
-DELETE http://localhost:4000/api/users/620ef7831b980437c723a4e0
+DELETE http://localhost:4000/api/users/620fb6f7d1331c9191545897
 Authorization: {{authToken}}

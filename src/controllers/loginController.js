@@ -6,6 +6,8 @@ const models = require('../models');
 const validator = require('../validator');
 const depurator = require('../depurator');
 
+const userService = require('../services/user');
+
 const mutations = {
         login: async (username, email, password) => {
                 let filterEmail, filterUsername
@@ -18,9 +20,7 @@ const mutations = {
 
                         filterEmail = depurator.depurateEmail(email);
                         try{
-                                user = await models.User.findOne({
-                                        email: filterEmail
-                                });
+                                user = await userService.findByEmail(filterEmail);
                         } catch(err){
                                 throw new Error('bad request');
                         }      
@@ -33,9 +33,7 @@ const mutations = {
 
                         filterUsername = depurator.depurateUsername(username);
                         try{
-                                user = await models.User.findOne({
-                                        username: filterUsername
-                                });
+                                user = await userService.findByUserame(filterUsername);
                         } catch(err){
                                 throw new Error('bad request');
                         }
