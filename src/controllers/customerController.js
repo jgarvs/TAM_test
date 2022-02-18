@@ -37,7 +37,7 @@ module.exports = {
         createCustomer: async (name, surname, activeUser) => {
 
                 if (validator.isNotValidName(name)) {
-                        throw new Error('bad request ' + name);
+                        throw new Error('bad request ');
                 }
 
                 if (validator.isNotValidSurname(surname)) {
