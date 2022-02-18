@@ -99,28 +99,28 @@ module.exports = {
                         if (validator.isNotValidName(name)) {
                                 throw new Error('bad request');
                         }
-                        setContainer.name = name;
+                        setContainer.name = depurator.depurateName(name);
                 }
 
                 if (surname) {
                         if (validator.isNotValidSurname(surname)) {
                                 throw new Error('bad request');
                         }
-                        setContainer.surname = surname;
+                        setContainer.surname = depurator.depurateSurname(surname);
                 }
 
                 if (username) {
                         if (validator.isNotValidUsername(username)) {
                                 throw new Error('bad request');
                         }
-                        setContainer.username = username;
+                        setContainer.username = depurator.depurateUsername(username);
                 }
 
                 if (email) {
                         if (validator.isNotValidEmail(email)) {
                                 throw new Error('bad request');
                         }
-                        setContainer.email = email;
+                        setContainer.email = depurator.depurateEmail(email);
                 }
 
                 if (password) {

@@ -1,6 +1,6 @@
-const mongoose = require ('mongoose');
+const mongoose = require('mongoose');
 const mongooseHidden = require('mongoose-hidden')({ defaultHidden: { __v: true } })
-const { ROLE }  = require('../roles');
+const { ROLE } = require('../roles');
 
 const userSchema = new mongoose.Schema({
         name: {
@@ -14,12 +14,12 @@ const userSchema = new mongoose.Schema({
         email: {
                 type: String,
                 required: true,
-                index: {unique: true}
+                index: { unique: true }
         },
         username: {
                 type: String,
                 required: true,
-                index: {unique: true}
+                index: { unique: true }
         },
         password: {
                 type: String,
@@ -33,9 +33,9 @@ const userSchema = new mongoose.Schema({
         }
 
 },
-{
-        timestamps: true
-});
+        {
+                timestamps: true
+        });
 
 userSchema.plugin(mongooseHidden);
 
