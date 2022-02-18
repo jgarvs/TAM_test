@@ -12,48 +12,48 @@ const mutations = {
         login: async (username, email, password) => {
                 let filterEmail, filterUsername
                 let user
-                if(email){
+                if (email) {
 
-                        if(validator.isNotValidEmail(email)){
+                        if (validator.isNotValidEmail(email)) {
                                 throw new Error('bad request');
                         }
 
                         filterEmail = depurator.depurateEmail(email);
-                        try{
+                        try {
                                 user = await userService.findByEmail(filterEmail);
-                        } catch(err){
+                        } catch (err) {
                                 throw new Error('bad request');
-                        }      
+                        }
                 }
-                else if(username){
+                else if (username) {
 
-                        if(validator.isNotValidUsername(username)){
+                        if (validator.isNotValidUsername(username)) {
                                 throw new Error('bad request');
                         }
 
                         filterUsername = depurator.depurateUsername(username);
-                        try{
+                        try {
                                 user = await userService.findByUserame(filterUsername);
-                        } catch(err){
+                        } catch (err) {
                                 throw new Error('bad request');
                         }
 
 
                 }
-                else{
+                else {
                         throw new Error('bad request');
                 }
-                
-                if(!user){
+
+                if (!user) {
                         throw new Error('bad request');
                 }
 
                 const valid = await bcrypt.compare(password, user.password);
-                if(!valid){
-                        throw new Error('bad request');   
+                if (!valid) {
+                        throw new Error('bad request');
                 }
 
-                return {token : jwt.sign({id: user._id}, process.env.JWT_SECRET)};
+                return { token: jwt.sign({ id: user._id }, process.env.JWT_SECRET) };
         }
 }
 
