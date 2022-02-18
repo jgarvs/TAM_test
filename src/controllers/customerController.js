@@ -122,7 +122,6 @@ module.exports = {
 
                         return updatedCustomer
                 } catch (err) {
-                        console.log(err);
                         throw new Error('bad request')
                 }
 

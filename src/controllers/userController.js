@@ -68,7 +68,6 @@ module.exports = {
 
                         return newUser;
                 } catch (err) {
-                        console.log(err);
                         throw new Error('bad request')
                 }
         },
@@ -149,7 +148,6 @@ module.exports = {
                         return updatedUser
 
                 } catch (err) {
-                        console.log(err);
                         throw new Error('bad request')
                 }
         },
