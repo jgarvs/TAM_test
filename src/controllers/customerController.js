@@ -77,13 +77,13 @@ module.exports = {
                         return { success: false };
                 }
         },
-        updateCustomer: async (id, name, surname, role, file, activeUser) => {
+        updateCustomer: async (id, name, surname, file, activeUser) => {
 
                 if (validator.isNotValidId(id)) {
                         throw new Error('bad request');
                 }
 
-                if (!name && !surname && !role && !file) {
+                if (!name && !surname && !file) {
                         throw new Error('bad request');
                 }
 
@@ -100,13 +100,6 @@ module.exports = {
                                 throw new Error('bad request');
                         }
                         setContainer.surname = surname;
-                }
-
-                if (role) {
-                        if (validator.isNotValidRole(surname)) {
-                                throw new Error('bad request');
-                        }
-                        setContainer.role = role;
                 }
 
                 setContainer.modifier = mongoose.Types.ObjectId(activeUser.id);

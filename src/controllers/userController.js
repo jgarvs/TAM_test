@@ -85,13 +85,13 @@ module.exports = {
                         return { success: false };
                 }
         },
-        updateUser: async (id, name, surname, username, email, password) => {
+        updateUser: async (id, name, surname, username, email, password, role) => {
 
                 if (validator.isNotValidId(id)) {
                         throw new Error('bad request');
                 }
 
-                if (!name && !surname && !username && !email && !password) {
+                if (!name && !surname && !username && !email && !password && !role) {
                         throw new Error('bad request');
                 }
 
@@ -130,6 +130,13 @@ module.exports = {
                         }
                         const hashed = await bcrypt.hash(password, 10);
                         setContainer.password = hashed;
+                }
+
+                if (role) {
+                        if (validator.isNotValidRole(role)) {
+                                throw new Error('bad request');
+                        }
+                        setContainer.role = role;
                 }
 
                 try {
