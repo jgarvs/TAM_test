@@ -1,4 +1,5 @@
 const mongoose = require ('mongoose');
+const mongooseHidden = require('mongoose-hidden')({ defaultHidden: { __v: true } })
 
 const customerSchema = new mongoose.Schema({
         name: {
@@ -29,6 +30,7 @@ const customerSchema = new mongoose.Schema({
         timestamps: true
 });
 
+customerSchema.plugin(mongooseHidden);
 const Customer = mongoose.model('Customer', customerSchema);
 
 module.exports = Customer;

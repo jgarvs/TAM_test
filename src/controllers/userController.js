@@ -8,51 +8,46 @@ const depurator = require('../depurator');
 
 
 module.exports = {
-        users: async (user) => {
-                if(!user){
-                        throw new AuthenticationError('you must be signed in to create a customer');
-                }
+        users: async () => {
                 try {
                         return await models.User.find();
                 }catch (err){
-                        throw new Error('no user where found');
+                        throw new Error('bad request');
                 }
         },
-        user: async (id, user) => {
-                if(!user){
-                        throw new AuthenticationError('you must be signed in to create a customer');
+        user: async (id) => {
+                if(validator.isNotValidId(id)){
+                        throw new Error('bad request');
                 }
+
                 try{
                         let foundCustomer = await models.User.findById(id);
 
                         if(!foundCustomer){
-                                throw new Error('user not found');
+                                throw new Error('bad request');
                         }
 
                         return foundCustomer;
                 } catch (err){
-                        throw new Error('user not found');
+                        throw new Error('bad request');
                 }
         },
-        createUser: async (name, surname, username, email, password, user) => {
-                if(!user){
-                        throw new AuthenticationError('you must be signed in to create an user');
-                }
+        createUser: async (name, surname, username, email, password) => {
 
                 if(validator.isNotValidName(name)){
-                        throw new Error('invalid name');
+                        throw new Error('bad request');
                 }
                 if(validator.isNotValidSurname(surname)){
-                        throw new Error('invalid surname');
+                        throw new Error('bad request');
                 }
                 if(validator.isNotValidUsername(username)){
-                        throw new Error('invalid username');
+                        throw new Error('bad request');
                 }
                 if(validator.isNotValidEmail(email)){
-                        throw new Error('invalid email');
+                        throw new Error('bad request');
                 }
                 if(validator.isNotValidPassword(password)){
-                        throw new Error('invalid password');
+                        throw new Error('bad request');
                 }
                 
                 let filterName = depurator.depurateName(name);
@@ -71,15 +66,16 @@ module.exports = {
                         }
                         const newUser = await models.User.create(newUserData);
 
-                        return jwt.sign({id: newUser._id}, process.env.JWT_SECRET);
+                        return {success:newUser != null};
                 } catch (err) {
                         console.log(err);
-                        throw new Error('Error creating account')
+                        throw new Error('bad request')
                 }
         },
-        deleteUser: async (id, user) => {
-                if(!user){
-                        throw new AuthenticationError('you must be signed in to delete a customer');
+        deleteUser: async (id) => {
+
+                if(validator.isNotValidId(id)){
+                        throw new Error('bad request');
                 }
 
                 try {
@@ -89,47 +85,48 @@ module.exports = {
                         return {success:false};
                 }
         },
-        updateUser: async (id, name, surname, username, email, password, user ) =>{
-                if(!user){
-                        throw new AuthenticationError('you must be signed in to delete a customer');
+        updateUser: async (id, name, surname, username, email, password) =>{
+
+                if(validator.isNotValidId(id)){
+                        throw new Error('bad request');
                 }
 
                 if(!name && !surname && !username && !email && !password){
-                        throw new Error("Invalid parameters");
+                        throw new Error('bad request');
                 }
 
                 let setContainer = {}
                 if(name){
                         if(validator.isNotValidName(name)){
-                                throw new Error('invalid name');
+                                throw new Error('bad request');
                         }
                         setContainer.name = name;
                 }
 
                 if(surname){
                         if(validator.isNotValidSurname(surname)){
-                                throw new Error('invalid surname');
+                                throw new Error('bad request');
                         }
                         setContainer.surname = surname;
                 }
 
                 if(username){
                         if(validator.isNotValidUsername(username)){
-                                throw new Error('invalid username');
+                                throw new Error('bad request');
                         }
                         setContainer.username = username;
                 }
 
                 if(email){
                         if(validator.isNotValidEmail(email)){
-                                throw new Error('invalid email');
+                                throw new Error('bad request');
                         }
                         setContainer.email = email;
                 }
 
                 if(password){
                         if(validator.isNotValidPassword(password)){
-                                throw new Error('invalid password');
+                                throw new Error('bad request');
                         }
                         const hashed = await bcrypt.hash(password, 10);
                         setContainer.password = hashed;
@@ -143,14 +140,14 @@ module.exports = {
                         );
 
                         if(!updatedUser){
-                                throw new Error('user not found');
+                                throw new Error('bad request');
                         }
 
                         return updatedUser
 
                 } catch (err){
                         console.log(err);
-                        throw new Error('Error updating account')
+                        throw new Error('bad request')
                 }
         },
 }

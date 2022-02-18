@@ -5,6 +5,16 @@ const USERNAME_LEN = 8;
 
 class Validator{
 
+        isValidId(id){
+
+                if(!id){
+                        return false;
+                }
+
+                let regex = /^[a-zA-Z0-9]+$/;
+                return regex.test(id);
+        }
+
         isValidName(name){
 
                 if(!name){
@@ -49,6 +59,10 @@ class Validator{
                 return this.isValidName(username) && username.length >= USERNAME_LEN;
         }
 
+        isNotValidId(id){
+                return !this.isValidId(id);
+        }
+
         isNotValidName(name){
                 return !this.isValidName(name);
         }
@@ -69,8 +83,6 @@ class Validator{
                 return !this.isValidUsername(username);
         }
 
-
-        //TODO: isId
         //TODO:photoField
 
 }

@@ -1,5 +1,5 @@
 const mongoose = require ('mongoose');
-const mongooseHidden = require('mongoose-hidden')({ defaultHidden: { } })
+const mongooseHidden = require('mongoose-hidden')({ defaultHidden: { __v: true } })
 
 const userSchema = new mongoose.Schema({
         name: {

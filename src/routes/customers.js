@@ -4,9 +4,9 @@ const router = Router();
 const CustomerController = require('../controllers/customerController');
 const errors = require('../customErrorHandler');
 
-router.get('/', getUser,async (req, res) => {
+router.get('/',async (req, res) => {
         try{
-                let response = await CustomerController.customers(res.user);
+                let response = await CustomerController.customers();
                 res.json(response);
         } catch (err){
                 res.status(400).send(errors.errorFound(err));
@@ -14,10 +14,10 @@ router.get('/', getUser,async (req, res) => {
 
 });
 
-router.get('/:id', getUser, async (req, res) => {
+router.get('/:id', async (req, res) => {
         let id = req.params.id;
         try{
-                let response = await CustomerController.customer(id, res.user);
+                let response = await CustomerController.customer(id);
                 res.json(response);
         } catch (err){
                 res.status(400).json(errors.errorFound(err));
@@ -25,50 +25,41 @@ router.get('/:id', getUser, async (req, res) => {
 });
 
 
-router.post('/', getUser, async (req, res)=>{
+router.post('/', async (req, res)=>{
         let name = req.body.name;
         let surname = req.body.surname;
         let photoField = req.body.photoField;
+        let file = req.files.file;
 
         try{
-                let response = await CustomerController.createCustomer(name, surname, photoField, res.user);
+                let response = await CustomerController.createCustomer(name, surname, photoField, file, res.activeUser);
                 res.status(201).json(response);
         } catch (err){
                 res.status(400).json(errors.errorFound(err));
         }
 });
 
-router.patch('/:id', getUser, async (req, res)=>{
+router.patch('/:id', async (req, res)=>{
         let id = req.params.id;
         let name = req.body.name;
         let surname = req.body.surname;
         let photoField = req.body.photoField;
         try{
-                let response = await CustomerController.updateCustomer(id, name, surname, photoField, res.user);
+                let response = await CustomerController.updateCustomer(id, name, surname, photoField, res.activeUser);
                 res.json(response);
         } catch (err){
                 res.status(400).json(errors.errorFound(err));
         }
 });
 
-router.delete('/:id', getUser, async (req, res)=>{
+router.delete('/:id', async (req, res)=>{
         let id = req.params.id;
         try{
-                let response = await CustomerController.deleteCustomer(id, res.user);
+                let response = await CustomerController.deleteCustomer(id);
                 res.json(response);
         } catch (err){
                 res.status(400).json(errors.errorFound(err));
         }
 });
-
-//TODO:FIX THIS
-function getUser(req, res, next){
-        let user = {id:1}
-        res.user = user;
-        if(false){
-                return res.status(400).json(errors.errorFound(err))
-        }
-        next();
-}
 
 module.exports = router;

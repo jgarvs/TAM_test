@@ -1,5 +1,73 @@
 const Validator = require('../src/validator')
 
+
+describe("Validator validate id", () => {
+
+        test("valid id", () => {
+                const testCaseId = "6204454c93f1447f2f28e674";
+                const result = Validator.isValidId(testCaseId);
+                expect(result).toBe(true);
+
+                const negateResult = Validator.isNotValidId(testCaseId);
+                expect(negateResult).toBe(false);
+        });
+
+        test("invalid char on id", () => {
+                const testCaseId = "[6204454c93f1447f2f28e674";
+                const result = Validator.isValidId(testCaseId);
+                expect(result).toBe(false);
+
+                const negateResult = Validator.isNotValidId(testCaseId);
+                expect(negateResult).toBe(true);
+        });
+
+        test("invalid empty space on id", () => {
+                const testCaseId = "6204454 c93f1447f2f28e674";
+                const result = Validator.isValidId(testCaseId);
+                expect(result).toBe(false);
+
+                const negateResult = Validator.isNotValidId(testCaseId);
+                expect(negateResult).toBe(true);
+        });
+
+        test("invalid empty space on if at the beginning", () => {
+                const testCaseId = " 6204454c93f1447f2f28e674";
+                const result = Validator.isValidId(testCaseId);
+                expect(result).toBe(false);
+
+                const negateResult = Validator.isNotValidId(testCaseId);
+                expect(negateResult).toBe(true);
+        });
+
+        test("invalid empty space on id at the end", () => {
+                const testCaseId = "6204454c93f1447f2f28e674 ";
+                const result = Validator.isValidId(testCaseId);
+                expect(result).toBe(false);
+
+                const negateResult = Validator.isNotValidId(testCaseId);
+                expect(negateResult).toBe(true);
+        });
+
+        test("empty id", () => {
+                const testCaseId = "";
+                const result = Validator.isValidId(testCaseId);
+                expect(result).toBe(false);
+
+                const negateResult = Validator.isNotValidId(testCaseId);
+                expect(negateResult).toBe(true);
+        });
+
+        test("null id", () => {
+                const testCaseId = null;
+                const result = Validator.isValidId(testCaseId);
+                expect(result).toBe(false);
+
+                const negateResult = Validator.isNotValidId(testCaseId);
+                expect(negateResult).toBe(true);
+        });
+});
+
+
 describe("Validator validate name", () => {
 
         test("valid name", () => {
@@ -29,7 +97,7 @@ describe("Validator validate name", () => {
                 expect(negateResult).toBe(true);
         });
 
-        test("invalid empty space on name ath the beginning", () => {
+        test("invalid empty space on name at the beginning", () => {
                 const testCaseName = " asdf";
                 const result = Validator.isValidName(testCaseName);
                 expect(result).toBe(false);
@@ -38,7 +106,7 @@ describe("Validator validate name", () => {
                 expect(negateResult).toBe(true);
         });
 
-        test("invalid empty space on name ath the end", () => {
+        test("invalid empty space on name at the end", () => {
                 const testCaseName = "asdf ";
                 const result = Validator.isValidName(testCaseName);
                 expect(result).toBe(false);
