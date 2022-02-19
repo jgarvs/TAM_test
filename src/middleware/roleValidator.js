@@ -1,9 +1,11 @@
+const errors = require('../customErrorHandler');
 
 module.exports = {
-        authRole: (role)=>{
+        authRole: (role) => {
                 return (req, res, next) => {
-                        if(res.activeUser.role !== role){
-                                return res.status(401).send('Not Allowed');
+                        if (res.activeUser.role !== role) {
+                                let err = { message: 'bad request' };
+                                return res.status(401).json(errors.errorFound(err));
                         }
 
                         next();
