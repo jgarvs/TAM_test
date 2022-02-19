@@ -13,6 +13,7 @@ const userController = require('../src/controllers/userController');
 const customerController = require('../src/controllers/customerController');
 
 const depurator = require('../src/depurator');
+const errors = require('../src/customErrorHandler');
 
 describe("test customer API", () => {
         const username = "testerAA"
@@ -101,7 +102,7 @@ describe("test customer API", () => {
                                         .set('Authorization', badToken);
 
                                 let body = response.body;
-                                expect(body).toEqual({ message: 'we found an error' });
+                                expect(body).toEqual(errors.errorFound(""));
                         });
                 });
         });
@@ -139,7 +140,7 @@ describe("test customer API", () => {
                                         .set('Authorization', token);
 
                                 let body = response.body;
-                                expect(body).toEqual({ message: 'we found an error' });
+                                expect(body).toEqual(errors.errorFound(""));
 
                         });
 
@@ -155,7 +156,7 @@ describe("test customer API", () => {
                                         .set('Authorization', badToken);
 
                                 let body = response.body;
-                                expect(body).toEqual({ message: 'we found an error' });
+                                expect(body).toEqual(errors.errorFound(""));
 
                         });
                 });
@@ -200,7 +201,7 @@ describe("test customer API", () => {
                                         .send(payload);
 
                                 let body = response.body;
-                                expect(body).toEqual({ message: 'we found an error' });
+                                expect(body).toEqual(errors.errorFound(""));
                         });
 
                         test("create customer invalid surname", async () => {
@@ -216,7 +217,7 @@ describe("test customer API", () => {
                                         .send(payload);
 
                                 let body = response.body;
-                                expect(body).toEqual({ message: 'we found an error' });
+                                expect(body).toEqual(errors.errorFound(""));
                         });
 
                         test("try to send bad token", async () => {
@@ -232,7 +233,7 @@ describe("test customer API", () => {
                                         .send(payload);
 
                                 let body = response.body;
-                                expect(body).toEqual({ message: 'we found an error' });
+                                expect(body).toEqual(errors.errorFound(""));
 
                         });
                 })
@@ -282,7 +283,7 @@ describe("test customer API", () => {
                                         .set('Authorization', badToken);
 
                                 let body = response.body;
-                                expect(body).toEqual({ message: 'we found an error' });
+                                expect(body).toEqual(errors.errorFound(""));
                         });
                 });
         })
@@ -391,7 +392,7 @@ describe("test customer API", () => {
                                         .send(payload)
 
                                 let body = response.body;
-                                expect(body).toEqual({ message: 'we found an error' });
+                                expect(body).toEqual(errors.errorFound(""));
 
                         });
 
@@ -435,7 +436,7 @@ describe("test customer API", () => {
                                         .send(payload)
 
                                 let body = response.body;
-                                expect(body).toEqual({ message: 'we found an error' });
+                                expect(body).toEqual(errors.errorFound(""));
                         });
                 });
         });

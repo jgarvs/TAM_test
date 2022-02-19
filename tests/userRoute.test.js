@@ -12,6 +12,7 @@ const userController = require('../src/controllers/userController');
 
 const depurator = require('../src/depurator');
 const { ROLE } = require('../src/roles');
+const errors = require('../src/customErrorHandler');
 
 describe("test customer API", () => {
 
@@ -71,7 +72,7 @@ describe("test customer API", () => {
 
         describe("GET /users ", () => {
                 describe("try to get customers list", () => {
-                        test("list 3 users", async () => {
+                        test("list 5 users", async () => {
                                 let nameA = "testerA";
                                 let surnameA = "mysuperuserA";
                                 let usernameA = "supertesterA";
@@ -103,7 +104,7 @@ describe("test customer API", () => {
                                 expect(users.length).toBe(2 + 3);
                         });
 
-                        test("list 3 users", async () => {
+                        test("list 5 users role not allowed", async () => {
                                 let nameA = "testerA";
                                 let surnameA = "mysuperuserA";
                                 let usernameA = "supertesterA";
@@ -132,8 +133,74 @@ describe("test customer API", () => {
                                         .get('/api/users')
                                         .set('Authorization', basicToken)
                                 let body = response.body;
-                                console.log(response);
-                                expect(body).toEqual({ message: 'we found an error' });
+                                expect(body).toEqual(errors.errorFound(""));
+                        });
+
+                        test("list 2 users", async () => {
+                                const response = await request(app)
+                                        .get('/api/users')
+                                        .set('Authorization', adminToken)
+                                let users = response.body;
+                                expect(users.length).toBe(2);
+                        });
+
+                        test("bad token", async () => {
+                                let badToken = "ldkldsnnasvndknjknjasdkjdkbj"
+                                const response = await request(app)
+                                        .get('/api/users')
+                                        .set('Authorization', badToken)
+                                let body = response.body;
+                                expect(body).toEqual(errors.errorFound(""));
+                        });
+                });
+        });
+
+
+        describe("GET /customer ", () => {
+                describe("try to get customer by id", () => {
+                        test("get user", async () => {
+                                const response = await request(app)
+                                        .get(`/api/users/${basicUser._id}`)
+                                        .set('Authorization', adminToken);
+
+                                let responseUser = response.body;
+                                expect(responseUser).toBeInstanceOf(Object);
+                                expect(responseUser).toHaveProperty('name', depurator.depurateName(basicUser.name));
+                                expect(responseUser).toHaveProperty('surname', depurator.depurateSurname(basicUser.surname));
+                                expect(responseUser).toHaveProperty('username', depurator.depurateUsername(basicUser.username));
+                                expect(responseUser).toHaveProperty('email', depurator.depurateEmail(basicUser.email));
+                                expect(responseUser).not.toHaveProperty('password');
+                                expect(responseUser).toHaveProperty('_id', basicUser._id.toString());
+                                expect(responseUser).toHaveProperty('updatedAt');
+                                expect(responseUser).toHaveProperty('createdAt');
+                        });
+
+                        test("get user role not allowed", async () => {
+                                const response = await request(app)
+                                        .get(`/api/users/${basicUser._id}`)
+                                        .set('Authorization', basicToken);
+
+                                let body = response.body;
+                                expect(body).toEqual(errors.errorFound(""));
+                        });
+
+                        test("get Not Found Customer", async () => {
+                                let nameA = "testerA";
+                                let surnameA = "mysuperuserA";
+                                let usernameA = "supertesterA";
+                                let emailA = "testera@test.com";
+                                let passwordA = "qqqAAA11%%CUA";
+
+                                let testUser = await userController.createUser(nameA, surnameA, usernameA, emailA, passwordA);
+                                await userController.deleteUser(testUser._id);
+
+                                const response = await request(app)
+                                        .get(`/api/users/${basicUser._id}`)
+                                        .set('Authorization', basicToken);
+
+                                let body = response.body;
+                                expect(body).toEqual(errors.errorFound(""));
+
                         });
                 });
         });

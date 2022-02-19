@@ -10,7 +10,7 @@ const db = require('../src/db');
 const userModel = require('../src/models/user');
 
 const userController = require('../src/controllers/userController');
-const { expectCt } = require('helmet');
+const errors = require('../src/customErrorHandler');
 
 describe("test login API", () => {
 
@@ -79,7 +79,7 @@ describe("test login API", () => {
                                                 password: badPassword
                                         });
                                 let body = response.body;
-                                expect(body).toEqual({ message: 'we found an error' });
+                                expect(body).toEqual(errors.errorFound(""));
                         });
 
                         test("login with email but bad password input", async () => {
@@ -98,7 +98,7 @@ describe("test login API", () => {
                                                 password: badPassword
                                         });
                                 let body = response.body;
-                                expect(body).toEqual({ message: 'we found an error' });
+                                expect(body).toEqual(errors.errorFound(""));
                         });
 
                         test("user Not found", async () => {
@@ -112,7 +112,7 @@ describe("test login API", () => {
                                                 password: password
                                         });
                                 let body = response.body;
-                                expect(body).toEqual({ message: 'we found an error' });
+                                expect(body).toEqual(errors.errorFound(""));
                         });
                 });
         });
