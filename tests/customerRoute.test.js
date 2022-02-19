@@ -421,7 +421,7 @@ describe("test customer API", () => {
                                 expect(updatedCostumer).toHaveProperty('createdAt');
                         });
 
-                        test("update customer surname", async () => {
+                        test("update customer invalid surname", async () => {
                                 const name1 = "testerA";
                                 const surname1 = "testerA"
                                 let customer = await customerController.createCustomer(name1, surname1, user);
