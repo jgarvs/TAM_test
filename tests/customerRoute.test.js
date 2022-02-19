@@ -34,32 +34,33 @@ describe("test customer API", () => {
                 db.close();
         });
 
+        let token
+        beforeEach(async () => {
+                const response = await request(app)
+                        .post("/api/login")
+                        .send({
+                                username: username,
+                                password: password
+                        });
+                token = response.body.token;
+        });
+
         describe("GET /customers ", () => {
-                let token
-                beforeEach(async () => {
-                        const response = await request(app)
-                                .post("/api/login")
-                                .send({
-                                        username: username,
-                                        password: password
-                                });
-                        token = response.body.token;
-                });
 
                 describe("try to get customers list", () => {
                         test("list 3 customers", async () => {
 
                                 const name1 = "testerA";
                                 const surname1 = "testerA"
-                                customerController.createCustomer(name1, surname1, user)
+                                await customerController.createCustomer(name1, surname1, user)
 
                                 const name2 = "testerA";
                                 const surname2 = "testerA"
-                                customerController.createCustomer(name2, surname2, user)
+                                await customerController.createCustomer(name2, surname2, user)
 
                                 const name3 = "testerA";
                                 const surname3 = "testerA"
-                                customerController.createCustomer(name3, surname3, user)
+                                await customerController.createCustomer(name3, surname3, user)
 
                                 const response = await request(app).get('/api/customers')
                                         .set('Authorization', token)
@@ -72,7 +73,7 @@ describe("test customer API", () => {
 
                                 const name1 = "testerA";
                                 const surname1 = "testerA"
-                                customerController.createCustomer(name1, surname1, user)
+                                await customerController.createCustomer(name1, surname1, user)
 
                                 const response = await request(app).get('/api/customers')
                                         .set('Authorization', token)
@@ -92,11 +93,61 @@ describe("test customer API", () => {
                         test("try to send bad token", async () => {
                                 const badToken = "asdlklsadfasdjfjjqjqewfjfsdn.alfkjkfsdasfj"
                                 const response = await request(app).get('/api/customers')
-                                        .set('Authorization', badToken)
+                                        .set('Authorization', badToken);
 
                                 let body = response.body;
                                 expect(body).toEqual({ message: 'we found an error' });
                         });
                 });
         });
+
+        describe("GET /customer ", () => {
+                describe("try to get customer by id", () => {
+                        test("get customer", async () => {
+                                const name1 = "testerA";
+                                const surname1 = "testerA"
+                                let customer = await customerController.createCustomer(name1, surname1, user);
+
+                                const response = await request(app).get(`/api/customers/${customer._id}`)
+                                        .set('Authorization', token);
+
+                                let responseCustomer = response.body;
+                                expect(responseCustomer).toBeInstanceOf(Object);
+                                expect(responseCustomer).toHaveProperty('name', customer.name);
+                                expect(responseCustomer).toHaveProperty('surname', customer.surname);
+                                expect(responseCustomer).toHaveProperty('creator', customer.creator.toString());
+                                expect(responseCustomer).toHaveProperty('modifier', customer.modifier.toString());
+                                expect(responseCustomer).toHaveProperty('_id', customer._id.toString());
+                                expect(responseCustomer).toHaveProperty('updatedAt');
+                                expect(responseCustomer).toHaveProperty('createdAt');
+                        });
+
+                        test("get Not Found Customer", async () => {
+                                const name1 = "testerA";
+                                const surname1 = "testerA"
+                                let customer = await customerController.createCustomer(name1, surname1, user);
+                                await customerController.deleteCustomer(customer._id);
+
+                                const response = await request(app).get(`/api/customers/${customer._id}`)
+                                        .set('Authorization', token);
+
+                                let body = response.body;
+                                expect(body).toEqual({ message: 'we found an error' });
+
+                        });
+
+                        test("try to send bad token", async () => {
+                                const badToken = "asdlklsadfasdjfjjqjqewfjfsdn.alfkjkfsdasfj"
+                                const response = await request(app).get(`/api/customers/${customer._id}`)
+                                        .set('Authorization', badToken);
+
+                                let body = response.body;
+                                expect(body).toEqual({ message: 'we found an error' });
+
+                        });
+                });
+
+        });
+
+
 });
