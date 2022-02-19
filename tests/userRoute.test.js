@@ -33,6 +33,8 @@ describe("test customer API", () => {
         const basicEmail = "basic@bbbb.ccc";
         const basicPassword = "qqqAAA11%%";
 
+        let badToken = "ldkldsnnasvndknjknjasdkjdkbj";
+
         beforeAll(async () => {
                 db.connect(TEST_DB);
                 await userModel.deleteMany({});
@@ -48,6 +50,8 @@ describe("test customer API", () => {
         });
 
         beforeEach(async () => {
+                await userModel.deleteMany({});
+
                 adminUser = await userController.createUser(adminName, adminSurname, adminUsername, adminEmail, adminPassword);
 
                 basicUser = await userController.createUser(basicName, basicSurname, basicUsername, basicEmail, basicPassword);
@@ -144,8 +148,7 @@ describe("test customer API", () => {
                                 expect(users.length).toBe(2);
                         });
 
-                        test("bad token", async () => {
-                                let badToken = "ldkldsnnasvndknjknjasdkjdkbj"
+                        test("try to send bad token", async () => {
                                 const response = await request(app)
                                         .get('/api/users')
                                         .set('Authorization', badToken)
@@ -201,6 +204,277 @@ describe("test customer API", () => {
                                 let body = response.body;
                                 expect(body).toEqual(errors.errorFound(""));
 
+                        });
+
+                        test("try to send bad token", async () => {
+                                const response = await request(app)
+                                        .get(`/api/users/${basicUser._id}`)
+                                        .set('Authorization', badToken);
+
+                                let body = response.body;
+                                expect(body).toEqual(errors.errorFound(""));
+
+                        });
+                });
+        });
+
+        describe("POST /user ", () => {
+                describe("try to create user", () => {
+                        test("create user", async () => {
+
+                                let nameB = "testerB";
+                                let surnameB = "mysuperuserB";
+                                let usernameB = "supertesterB";
+                                let emailB = "testerb@test.com";
+                                let passwordB = "qqqAAA11%%CUA";
+
+                                let payload = {
+                                        name: nameB,
+                                        surname: surnameB,
+                                        username: usernameB,
+                                        email: emailB,
+                                        password: passwordB
+                                }
+
+                                const response = await request(app)
+                                        .post(`/api/users`)
+                                        .set('Authorization', adminToken)
+                                        .send(payload);
+
+                                let responseUser = response.body;
+                                expect(responseUser).toBeInstanceOf(Object);
+                                expect(responseUser).toHaveProperty('name', depurator.depurateName(payload.name));
+                                expect(responseUser).toHaveProperty('surname', depurator.depurateSurname(payload.surname));
+                                expect(responseUser).toHaveProperty('username', depurator.depurateUsername(payload.username));
+                                expect(responseUser).toHaveProperty('email', depurator.depurateEmail(payload.email));
+                                expect(responseUser).not.toHaveProperty('password');
+                                expect(responseUser).toHaveProperty('_id');
+                                expect(responseUser).toHaveProperty('updatedAt');
+                                expect(responseUser).toHaveProperty('createdAt');
+                        });
+
+                        test("create user role not allowed", async () => {
+
+                                let nameB = "testerB";
+                                let surnameB = "mysuperuserB";
+                                let usernameB = "supertesterB";
+                                let emailB = "testerb@test.com";
+                                let passwordB = "qqqAAA11%%CUA";
+
+                                let payload = {
+                                        name: nameB,
+                                        surname: surnameB,
+                                        username: usernameB,
+                                        email: emailB,
+                                        password: passwordB
+                                }
+
+                                const response = await request(app)
+                                        .post(`/api/users`)
+                                        .set('Authorization', basicToken)
+                                        .send(payload);
+
+                                let body = response.body;
+                                expect(body).toEqual(errors.errorFound(""));
+                        });
+
+                        test("create user invalid name", async () => {
+
+                                let nameB = "tes#terB";
+                                let surnameB = "mysuperuserB";
+                                let usernameB = "supertesterB";
+                                let emailB = "testerb@test.com";
+                                let passwordB = "qqqAAA11%%CUA";
+
+                                let payload = {
+                                        name: nameB,
+                                        surname: surnameB,
+                                        username: usernameB,
+                                        email: emailB,
+                                        password: passwordB
+                                }
+
+                                const response = await request(app)
+                                        .post(`/api/users`)
+                                        .set('Authorization', adminToken)
+                                        .send(payload);
+
+                                let body = response.body;
+                                expect(body).toEqual(errors.errorFound(""));
+                        });
+
+                        test("create user invalid surname", async () => {
+
+                                let nameB = "testerB";
+                                let surnameB = "mysuperus()erB";
+                                let usernameB = "supertesterB";
+                                let emailB = "testerb@test.com";
+                                let passwordB = "qqqAAA11%%CUA";
+
+                                let payload = {
+                                        name: nameB,
+                                        surname: surnameB,
+                                        username: usernameB,
+                                        email: emailB,
+                                        password: passwordB
+                                }
+
+                                const response = await request(app)
+                                        .post(`/api/users`)
+                                        .set('Authorization', adminToken)
+                                        .send(payload);
+
+                                let body = response.body;
+                                expect(body).toEqual(errors.errorFound(""));
+                        });
+
+                        test("create user invalid username", async () => {
+
+                                let nameB = "testerB";
+                                let surnameB = "mysuperuserB";
+                                let usernameB = "supertes=terB";
+                                let emailB = "testerb@test.com";
+                                let passwordB = "qqqAAA11%%CUA";
+
+                                let payload = {
+                                        name: nameB,
+                                        surname: surnameB,
+                                        username: usernameB,
+                                        email: emailB,
+                                        password: passwordB
+                                }
+
+                                const response = await request(app)
+                                        .post(`/api/users`)
+                                        .set('Authorization', adminToken)
+                                        .send(payload);
+
+                                let body = response.body;
+                                expect(body).toEqual(errors.errorFound(""));
+                        });
+
+                        test("create user invalid email", async () => {
+
+                                let nameB = "testerB";
+                                let surnameB = "mysuperuserB";
+                                let usernameB = "supertesterB";
+                                let emailB = "testerb@.com";
+                                let passwordB = "qqqAAA11%%CUA";
+
+                                let payload = {
+                                        name: nameB,
+                                        surname: surnameB,
+                                        username: usernameB,
+                                        email: emailB,
+                                        password: passwordB
+                                }
+
+                                const response = await request(app)
+                                        .post(`/api/users`)
+                                        .set('Authorization', adminToken)
+                                        .send(payload);
+
+                                let body = response.body;
+                                expect(body).toEqual(errors.errorFound(""));
+                        });
+
+                        test("create user invalid password", async () => {
+
+                                let nameB = "tes#terB";
+                                let surnameB = "mysuperuserB";
+                                let usernameB = "supertesterB";
+                                let emailB = "testerb@test.com";
+                                let passwordB = "qqqAA";
+
+                                let payload = {
+                                        name: nameB,
+                                        surname: surnameB,
+                                        username: usernameB,
+                                        email: emailB,
+                                        password: passwordB
+                                }
+
+                                const response = await request(app)
+                                        .post(`/api/users`)
+                                        .set('Authorization', adminToken)
+                                        .send(payload);
+
+                                let body = response.body;
+                                expect(body).toEqual(errors.errorFound(""));
+                        });
+
+                        test("try to send bad token", async () => {
+                                let nameB = "testerB";
+                                let surnameB = "mysuperuserB";
+                                let usernameB = "supertesterB";
+                                let emailB = "testerb@test.com";
+                                let passwordB = "qqqAAA11%%CUA";
+
+                                let payload = {
+                                        name: nameB,
+                                        surname: surnameB,
+                                        username: usernameB,
+                                        email: emailB,
+                                        password: passwordB
+                                }
+
+                                const response = await request(app)
+                                        .post(`/api/users`)
+                                        .set('Authorization', badToken)
+                                        .send(payload);
+
+                                let body = response.body;
+                                expect(body).toEqual(errors.errorFound(""));
+
+                        });
+                });
+        });
+
+
+        describe("DELETE /user", () => {
+                describe("try to delete an user", () => {
+                        test("delete user", async () => {
+                                let nameA = "testerA";
+                                let surnameA = "mysuperuserA";
+                                let usernameA = "supertesterA";
+                                let emailA = "testera@test.com";
+                                let passwordA = "qqqAAA11%%CUA";
+
+                                let testUser = await userController.createUser(nameA, surnameA, usernameA, emailA, passwordA);
+                                const response = await request(app)
+                                        .delete(`/api/users/${testUser._id}`)
+                                        .set('Authorization', adminToken);
+
+                                let body = response.body;
+                                expect(body).toEqual({ success: true });
+                        });
+
+                        test("delete user twice", async () => {
+                                let nameA = "testerA";
+                                let surnameA = "mysuperuserA";
+                                let usernameA = "supertesterA";
+                                let emailA = "testera@test.com";
+                                let passwordA = "qqqAAA11%%CUA";
+
+                                let testUser = await userController.createUser(nameA, surnameA, usernameA, emailA, passwordA);
+                                await request(app)
+                                        .delete(`/api/users/${testUser._id}`)
+                                        .set('Authorization', adminToken);
+                                const response = await request(app)
+                                        .delete(`/api/users/${testUser._id}`)
+                                        .set('Authorization', adminToken);
+
+                                let body = response.body;
+                                expect(body).toEqual({ success: false });
+                        });
+
+                        test("try to send bad token", async () => {
+                                const response = await request(app)
+                                        .delete(`/api/users/${basicUser._id}`)
+                                        .set('Authorization', badToken);
+
+                                let body = response.body;
+                                expect(body).toEqual({ success: false });
                         });
                 });
         });
