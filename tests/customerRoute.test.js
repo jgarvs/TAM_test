@@ -12,6 +12,8 @@ const userModel = require('../src/models/user');
 const userController = require('../src/controllers/userController');
 const customerController = require('../src/controllers/customerController');
 
+const depurator = require('../src/depurator');
+
 describe("test customer API", () => {
         const username = "testerAA"
         const password = "qqqAAA11%%"
@@ -176,8 +178,8 @@ describe("test customer API", () => {
 
                                 let newCostumer = response.body;
                                 expect(newCostumer).toBeInstanceOf(Object);
-                                expect(newCostumer).toHaveProperty('name', payload.name.toLowerCase());
-                                expect(newCostumer).toHaveProperty('surname', payload.surname.toLowerCase());
+                                expect(newCostumer).toHaveProperty('name', depurator.depurateName(payload.name));
+                                expect(newCostumer).toHaveProperty('surname', depurator.depurateSurname(payload.surname));
                                 expect(newCostumer).toHaveProperty('creator', user._id.toString());
                                 expect(newCostumer).toHaveProperty('modifier', user._id.toString());
                                 expect(newCostumer).toHaveProperty('_id');
@@ -304,8 +306,8 @@ describe("test customer API", () => {
 
                                 let newCostumer = response.body;
                                 expect(newCostumer).toBeInstanceOf(Object);
-                                expect(newCostumer).toHaveProperty('name', payload.name.toLowerCase());
-                                expect(newCostumer).toHaveProperty('surname', payload.surname.toLowerCase());
+                                expect(newCostumer).toHaveProperty('name', depurator.depurateName(payload.name));
+                                expect(newCostumer).toHaveProperty('surname', depurator.depurateSurname(payload.surname));
                                 expect(newCostumer).toHaveProperty('creator', user._id.toString());
                                 expect(newCostumer).toHaveProperty('modifier', user._id.toString());
                                 expect(newCostumer).toHaveProperty('_id');
@@ -339,7 +341,7 @@ describe("test customer API", () => {
                                         .send(payload)
                                 let updatedCostumer = response.body;
                                 expect(updatedCostumer).toBeInstanceOf(Object);
-                                expect(updatedCostumer).toHaveProperty('name', payload.name.toLowerCase());
+                                expect(updatedCostumer).toHaveProperty('name', depurator.depurateName(payload.name));
                                 expect(updatedCostumer).toHaveProperty('surname', customer.surname);
                                 expect(updatedCostumer).toHaveProperty('creator', user._id.toString());
                                 expect(updatedCostumer).toHaveProperty('modifier', secondUser._id.toString());
@@ -365,7 +367,7 @@ describe("test customer API", () => {
 
                                 let updatedCostumer = response.body;
                                 expect(updatedCostumer).toBeInstanceOf(Object);
-                                expect(updatedCostumer).toHaveProperty('name', payload.name.toLowerCase());
+                                expect(updatedCostumer).toHaveProperty('name', depurator.depurateName(payload.name));
                                 expect(updatedCostumer).toHaveProperty('surname', customer.surname);
                                 expect(updatedCostumer).toHaveProperty('creator', user._id.toString());
                                 expect(updatedCostumer).toHaveProperty('modifier', user._id.toString());
@@ -410,7 +412,7 @@ describe("test customer API", () => {
                                 let updatedCostumer = response.body;
                                 expect(updatedCostumer).toBeInstanceOf(Object);
                                 expect(updatedCostumer).toHaveProperty('name', customer.name);
-                                expect(updatedCostumer).toHaveProperty('surname', payload.surname.toLowerCase());
+                                expect(updatedCostumer).toHaveProperty('surname', depurator.depurateSurname(payload.surname));
                                 expect(updatedCostumer).toHaveProperty('creator', user._id.toString());
                                 expect(updatedCostumer).toHaveProperty('modifier', user._id.toString());
                                 expect(updatedCostumer).toHaveProperty('_id');
