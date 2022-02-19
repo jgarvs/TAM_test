@@ -7,6 +7,8 @@ const customerModel = require('../src/models/customer');
 const userModel = require('../src/models/user');
 const userService = require('../src/services/user');
 
+const depurator = require('../src/depurator');
+
 describe("test customer controller", () => {
 
         let user;
@@ -142,8 +144,8 @@ describe("test customer controller", () => {
                         let updated = await controller.updateCustomer(customer1._id, newName, newSurname, null, user);
 
                         expect(updated).toBeInstanceOf(Object);
-                        expect(updated).toHaveProperty('name', newName);
-                        expect(updated).toHaveProperty('surname', newSurname);
+                        expect(updated).toHaveProperty('name', depurator.depurateName(newName));
+                        expect(updated).toHaveProperty('surname', depurator.depurateSurname(newSurname));
                         expect(updated).toHaveProperty('creator', user._id);
                         expect(updated).toHaveProperty('modifier', user._id);
                         expect(updated).toHaveProperty('_id', customer1._id);
@@ -161,7 +163,7 @@ describe("test customer controller", () => {
                         let updated = await controller.updateCustomer(customer1._id, newName, null, null, user);
 
                         expect(updated).toBeInstanceOf(Object);
-                        expect(updated).toHaveProperty('name', newName);
+                        expect(updated).toHaveProperty('name', depurator.depurateName(newName));
                         expect(updated).toHaveProperty('surname', customer1.surname);
                         expect(updated).toHaveProperty('creator', user._id);
                         expect(updated).toHaveProperty('modifier', user._id);
@@ -195,7 +197,7 @@ describe("test customer controller", () => {
 
                         expect(updated).toBeInstanceOf(Object);
                         expect(updated).toHaveProperty('name', customer1.name);
-                        expect(updated).toHaveProperty('surname', newSurname);
+                        expect(updated).toHaveProperty('surname', depurator.depurateSurname(newSurname));
                         expect(updated).toHaveProperty('creator', user._id);
                         expect(updated).toHaveProperty('modifier', user._id);
                         expect(updated).toHaveProperty('_id', customer1._id);
@@ -253,7 +255,7 @@ describe("test customer controller", () => {
 
                         expect(updated).toBeInstanceOf(Object);
                         expect(updated).toHaveProperty('name', customer1.name);
-                        expect(updated).toHaveProperty('surname', newSurname);
+                        expect(updated).toHaveProperty('surname', depurator.depurateSurname(newSurname));
                         expect(updated).toHaveProperty('creator', user._id);
                         expect(updated).toHaveProperty('modifier', user2._id);
                         expect(updated).toHaveProperty('_id', customer1._id);
