@@ -75,7 +75,8 @@ describe("test customer API", () => {
                                 const surname1 = "testerA"
                                 await customerController.createCustomer(name1, surname1, user)
 
-                                const response = await request(app).get('/api/customers')
+                                const response = await request(app)
+                                        .get('/api/customers')
                                         .set('Authorization', token)
                                 let customers = response.body;
 
@@ -83,7 +84,8 @@ describe("test customer API", () => {
                         });
 
                         test("list 0 customers", async () => {
-                                const response = await request(app).get('/api/customers')
+                                const response = await request(app)
+                                        .get('/api/customers')
                                         .set('Authorization', token)
                                 let customers = response.body;
 
@@ -92,7 +94,8 @@ describe("test customer API", () => {
 
                         test("try to send bad token", async () => {
                                 const badToken = "asdlklsadfasdjfjjqjqewfjfsdn.alfkjkfsdasfj"
-                                const response = await request(app).get('/api/customers')
+                                const response = await request(app)
+                                        .get('/api/customers')
                                         .set('Authorization', badToken);
 
                                 let body = response.body;
@@ -108,7 +111,8 @@ describe("test customer API", () => {
                                 const surname1 = "testerA"
                                 let customer = await customerController.createCustomer(name1, surname1, user);
 
-                                const response = await request(app).get(`/api/customers/${customer._id}`)
+                                const response = await request(app)
+                                        .get(`/api/customers/${customer._id}`)
                                         .set('Authorization', token);
 
                                 let responseCustomer = response.body;
@@ -128,7 +132,8 @@ describe("test customer API", () => {
                                 let customer = await customerController.createCustomer(name1, surname1, user);
                                 await customerController.deleteCustomer(customer._id);
 
-                                const response = await request(app).get(`/api/customers/${customer._id}`)
+                                const response = await request(app)
+                                        .get(`/api/customers/${customer._id}`)
                                         .set('Authorization', token);
 
                                 let body = response.body;
@@ -138,7 +143,13 @@ describe("test customer API", () => {
 
                         test("try to send bad token", async () => {
                                 const badToken = "asdlklsadfasdjfjjqjqewfjfsdn.alfkjkfsdasfj"
-                                const response = await request(app).get(`/api/customers/${customer._id}`)
+
+                                const name1 = "testerA";
+                                const surname1 = "testerA"
+                                let customer = await customerController.createCustomer(name1, surname1, user);
+
+                                const response = await request(app)
+                                        .get(`/api/customers/${customer._id}`)
                                         .set('Authorization', badToken);
 
                                 let body = response.body;
@@ -149,5 +160,128 @@ describe("test customer API", () => {
 
         });
 
+        describe("POST /customer ", () => {
+                describe("try to create customer", () => {
+                        test("create customer", async () => {
 
+                                let payload = {
+                                        name: "testCostumer",
+                                        surname: "testCostumer"
+                                }
+
+                                const response = await request(app)
+                                        .post(`/api/customers`)
+                                        .set('Authorization', token)
+                                        .send(payload);
+
+                                let newCostumer = response.body;
+                                expect(newCostumer).toBeInstanceOf(Object);
+                                expect(newCostumer).toHaveProperty('name', payload.name.toLowerCase());
+                                expect(newCostumer).toHaveProperty('surname', payload.surname.toLowerCase());
+                                expect(newCostumer).toHaveProperty('creator', user._id.toString());
+                                expect(newCostumer).toHaveProperty('modifier', user._id.toString());
+                                expect(newCostumer).toHaveProperty('_id');
+                                expect(newCostumer).toHaveProperty('updatedAt');
+                                expect(newCostumer).toHaveProperty('createdAt');
+                        });
+
+                        test("create customer invalid name", async () => {
+
+                                let payload = {
+                                        name: "testCo#stumer",
+                                        surname: "testCostumer"
+                                }
+
+                                const response = await request(app)
+                                        .post(`/api/customers`)
+                                        .set('Authorization', token)
+                                        .send(payload);
+
+                                let body = response.body;
+                                expect(body).toEqual({ message: 'we found an error' });
+                        });
+
+                        test("create customer invalid surname", async () => {
+
+                                let payload = {
+                                        name: "testCostumer",
+                                        surname: "testCos/tumer"
+                                }
+
+                                const response = await request(app)
+                                        .post(`/api/customers`)
+                                        .set('Authorization', token)
+                                        .send(payload);
+
+                                let body = response.body;
+                                expect(body).toEqual({ message: 'we found an error' });
+                        });
+
+                        test("try to send bad token", async () => {
+                                const badToken = "asdlklsadfasdjfjjqjqewfjfsdn.alfkjkfsdasfj"
+
+                                let payload = {
+                                        name: "testCostumer",
+                                        surname: "testCos/tumer"
+                                }
+
+                                const response = await request(app).post(`/api/customers`)
+                                        .set('Authorization', badToken)
+                                        .send(payload);
+
+                                let body = response.body;
+                                expect(body).toEqual({ message: 'we found an error' });
+
+                        });
+                })
+        });
+
+        describe("DELETE /customer", () => {
+                describe("try to delete a customer", () => {
+                        test("delete customer", async () => {
+                                const name1 = "testerA";
+                                const surname1 = "testerA"
+                                let customer = await customerController.createCustomer(name1, surname1, user);
+
+                                const response = await request(app)
+                                        .delete(`/api/customers/${customer._id}`)
+                                        .set('Authorization', token);
+
+                                let body = response.body;
+                                expect(body).toEqual({ success: true });
+                        });
+
+                        test("delete customer twice", async () => {
+                                const name1 = "testerA";
+                                const surname1 = "testerA"
+                                let customer = await customerController.createCustomer(name1, surname1, user);
+
+                                await request(app)
+                                        .delete(`/api/customers/${customer._id}`)
+                                        .set('Authorization', token);
+
+                                const response = await request(app)
+                                        .delete(`/api/customers/${customer._id}`)
+                                        .set('Authorization', token);
+
+                                let body = response.body;
+                                expect(body).toEqual({ success: false });
+                        });
+
+                        test("try to send bad token", async () => {
+                                const badToken = "asdlklsadfasdjfjjqjqewfjfsdn.alfkjkfsdasfj"
+
+                                const name1 = "testerA";
+                                const surname1 = "testerA"
+                                let customer = await customerController.createCustomer(name1, surname1, user);
+
+                                const response = await request(app)
+                                        .delete(`/api/customers/${customer._id}`)
+                                        .set('Authorization', badToken);
+
+                                let body = response.body;
+                                expect(body).toEqual({ message: 'we found an error' });
+                        });
+                });
+        })
 });
