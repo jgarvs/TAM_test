@@ -284,4 +284,157 @@ describe("test customer API", () => {
                         });
                 });
         })
+
+        describe("PATCH /customer", () => {
+                describe("try to update a customer", () => {
+                        test("update customer all parameters", async () => {
+                                const name1 = "testerA";
+                                const surname1 = "testerA"
+                                let customer = await customerController.createCustomer(name1, surname1, user);
+
+                                let payload = {
+                                        name: "testCostumer",
+                                        surname: "testCostumer"
+                                }
+
+                                const response = await request(app)
+                                        .patch(`/api/customers/${customer._id}`)
+                                        .set('Authorization', token)
+                                        .send(payload)
+
+                                let newCostumer = response.body;
+                                expect(newCostumer).toBeInstanceOf(Object);
+                                expect(newCostumer).toHaveProperty('name', payload.name.toLowerCase());
+                                expect(newCostumer).toHaveProperty('surname', payload.surname.toLowerCase());
+                                expect(newCostumer).toHaveProperty('creator', user._id.toString());
+                                expect(newCostumer).toHaveProperty('modifier', user._id.toString());
+                                expect(newCostumer).toHaveProperty('_id');
+                                expect(newCostumer).toHaveProperty('updatedAt');
+                                expect(newCostumer).toHaveProperty('createdAt');
+                        });
+
+                        test("update customer modifier", async () => {
+                                let secondUsername = "testerBB"
+                                let secondUser = await userController.createUser("testerb", "testerb", secondUsername, "dddd@bbbb.ccc", password);
+
+                                const loginResponse = await request(app)
+                                        .post("/api/login")
+                                        .send({
+                                                username: secondUsername,
+                                                password: password
+                                        });
+                                let secondToken = loginResponse.body.token;
+
+                                const name1 = "testerA";
+                                const surname1 = "testerA"
+                                let customer = await customerController.createCustomer(name1, surname1, user);
+
+                                let payload = {
+                                        name: "testCostumer",
+                                }
+
+                                const response = await request(app)
+                                        .patch(`/api/customers/${customer._id}`)
+                                        .set('Authorization', secondToken)
+                                        .send(payload)
+                                let updatedCostumer = response.body;
+                                expect(updatedCostumer).toBeInstanceOf(Object);
+                                expect(updatedCostumer).toHaveProperty('name', payload.name.toLowerCase());
+                                expect(updatedCostumer).toHaveProperty('surname', customer.surname);
+                                expect(updatedCostumer).toHaveProperty('creator', user._id.toString());
+                                expect(updatedCostumer).toHaveProperty('modifier', secondUser._id.toString());
+                                expect(updatedCostumer).toHaveProperty('_id', customer._id.toString());
+                                expect(updatedCostumer).toHaveProperty('updatedAt');
+                                expect(updatedCostumer).toHaveProperty('createdAt');
+
+                        });
+
+                        test("update customer name", async () => {
+                                const name1 = "testerA";
+                                const surname1 = "testerA"
+                                let customer = await customerController.createCustomer(name1, surname1, user);
+
+                                let payload = {
+                                        name: "testCostumer",
+                                }
+
+                                const response = await request(app)
+                                        .patch(`/api/customers/${customer._id}`)
+                                        .set('Authorization', token)
+                                        .send(payload)
+
+                                let updatedCostumer = response.body;
+                                expect(updatedCostumer).toBeInstanceOf(Object);
+                                expect(updatedCostumer).toHaveProperty('name', payload.name.toLowerCase());
+                                expect(updatedCostumer).toHaveProperty('surname', customer.surname);
+                                expect(updatedCostumer).toHaveProperty('creator', user._id.toString());
+                                expect(updatedCostumer).toHaveProperty('modifier', user._id.toString());
+                                expect(updatedCostumer).toHaveProperty('_id');
+                                expect(updatedCostumer).toHaveProperty('updatedAt');
+                                expect(updatedCostumer).toHaveProperty('createdAt');
+                        });
+
+                        test("update customer with invalid name", async () => {
+                                const name1 = "testerA";
+                                const surname1 = "testerA"
+                                let customer = await customerController.createCustomer(name1, surname1, user);
+
+                                let payload = {
+                                        name: "testCostumer<",
+                                }
+
+                                const response = await request(app)
+                                        .patch(`/api/customers/${customer._id}`)
+                                        .set('Authorization', token)
+                                        .send(payload)
+
+                                let body = response.body;
+                                expect(body).toEqual({ message: 'we found an error' });
+
+                        });
+
+                        test("update customer surname", async () => {
+                                const name1 = "testerA";
+                                const surname1 = "testerA"
+                                let customer = await customerController.createCustomer(name1, surname1, user);
+
+                                let payload = {
+                                        surname: "testCostumer"
+                                }
+
+                                const response = await request(app)
+                                        .patch(`/api/customers/${customer._id}`)
+                                        .set('Authorization', token)
+                                        .send(payload)
+
+                                let updatedCostumer = response.body;
+                                expect(updatedCostumer).toBeInstanceOf(Object);
+                                expect(updatedCostumer).toHaveProperty('name', customer.name);
+                                expect(updatedCostumer).toHaveProperty('surname', payload.surname.toLowerCase());
+                                expect(updatedCostumer).toHaveProperty('creator', user._id.toString());
+                                expect(updatedCostumer).toHaveProperty('modifier', user._id.toString());
+                                expect(updatedCostumer).toHaveProperty('_id');
+                                expect(updatedCostumer).toHaveProperty('updatedAt');
+                                expect(updatedCostumer).toHaveProperty('createdAt');
+                        });
+
+                        test("update customer surname", async () => {
+                                const name1 = "testerA";
+                                const surname1 = "testerA"
+                                let customer = await customerController.createCustomer(name1, surname1, user);
+
+                                let payload = {
+                                        surname: "#testCostumer"
+                                }
+
+                                const response = await request(app)
+                                        .patch(`/api/customers/${customer._id}`)
+                                        .set('Authorization', token)
+                                        .send(payload)
+
+                                let body = response.body;
+                                expect(body).toEqual({ message: 'we found an error' });
+                        });
+                });
+        });
 });

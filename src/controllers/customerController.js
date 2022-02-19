@@ -92,14 +92,14 @@ module.exports = {
                         if (validator.isNotValidName(name)) {
                                 throw new Error('bad request');
                         }
-                        setContainer.name = name;
+                        setContainer.name = depurator.depurateName(name);;
                 }
 
                 if (surname) {
                         if (validator.isNotValidSurname(surname)) {
                                 throw new Error('bad request');
                         }
-                        setContainer.surname = surname;
+                        setContainer.surname = depurator.depurateSurname(surname);
                 }
 
                 setContainer.modifier = mongoose.Types.ObjectId(activeUser.id);
