@@ -173,6 +173,7 @@ describe("test customer API", () => {
                                 expect(responseUser).toHaveProperty('username', depurator.depurateUsername(basicUser.username));
                                 expect(responseUser).toHaveProperty('email', depurator.depurateEmail(basicUser.email));
                                 expect(responseUser).not.toHaveProperty('password');
+                                expect(responseUser).toHaveProperty('role', ROLE.BASIC);
                                 expect(responseUser).toHaveProperty('_id', basicUser._id.toString());
                                 expect(responseUser).toHaveProperty('updatedAt');
                                 expect(responseUser).toHaveProperty('createdAt');
@@ -248,6 +249,7 @@ describe("test customer API", () => {
                                 expect(responseUser).toHaveProperty('username', depurator.depurateUsername(payload.username));
                                 expect(responseUser).toHaveProperty('email', depurator.depurateEmail(payload.email));
                                 expect(responseUser).not.toHaveProperty('password');
+                                expect(responseUser).toHaveProperty('role', ROLE.ADMIN);
                                 expect(responseUser).toHaveProperty('_id');
                                 expect(responseUser).toHaveProperty('updatedAt');
                                 expect(responseUser).toHaveProperty('createdAt');
@@ -449,6 +451,22 @@ describe("test customer API", () => {
                                 expect(body).toEqual({ success: true });
                         });
 
+                        test("delete user role not allowed", async () => {
+                                let nameA = "testerA";
+                                let surnameA = "mysuperuserA";
+                                let usernameA = "supertesterA";
+                                let emailA = "testera@test.com";
+                                let passwordA = "qqqAAA11%%CUA";
+
+                                let testUser = await userController.createUser(nameA, surnameA, usernameA, emailA, passwordA);
+                                const response = await request(app)
+                                        .delete(`/api/users/${testUser._id}`)
+                                        .set('Authorization', basicToken);
+
+                                let body = response.body;
+                                expect(body).toEqual(errors.errorFound(""));
+                        });
+
                         test("delete user twice", async () => {
                                 let nameA = "testerA";
                                 let surnameA = "mysuperuserA";
@@ -474,7 +492,260 @@ describe("test customer API", () => {
                                         .set('Authorization', badToken);
 
                                 let body = response.body;
-                                expect(body).toEqual({ success: false });
+                                expect(body).toEqual(errors.errorFound(""));
+                        });
+                });
+        });
+
+        describe("PATCH /user", () => {
+                describe("try to update a user", () => {
+                        test("update user all parameters", async () => {
+                                let nameB = "testerB";
+                                let surnameB = "mysuperuserB";
+                                let usernameB = "supertesterB";
+                                let emailB = "testerb@test.com";
+                                let passwordB = "qqqAAA11%%CUA";
+
+                                let payload = {
+                                        name: nameB,
+                                        surname: surnameB,
+                                        username: usernameB,
+                                        email: emailB,
+                                        password: passwordB,
+                                        role: ROLE.BASIC
+                                }
+
+                                const response = await request(app)
+                                        .patch(`/api/users/${adminUser._id}`)
+                                        .set('Authorization', adminToken)
+                                        .send(payload);
+
+                                let responseUser = response.body;
+                                expect(responseUser).toBeInstanceOf(Object);
+                                expect(responseUser).toHaveProperty('name', depurator.depurateName(payload.name));
+                                expect(responseUser).toHaveProperty('surname', depurator.depurateSurname(payload.surname));
+                                expect(responseUser).toHaveProperty('username', depurator.depurateUsername(payload.username));
+                                expect(responseUser).toHaveProperty('email', depurator.depurateEmail(payload.email));
+                                expect(responseUser).not.toHaveProperty('password');
+                                expect(responseUser).toHaveProperty('role', ROLE.BASIC);
+                                expect(responseUser).toHaveProperty('_id', adminUser._id.toString());
+                                expect(responseUser).toHaveProperty('updatedAt');
+                                expect(responseUser).toHaveProperty('createdAt');
+
+                        });
+
+                        test("update user name", async () => {
+                                let nameB = "testerB";
+
+                                let payload = {
+                                        name: nameB
+                                }
+
+                                const response = await request(app)
+                                        .patch(`/api/users/${adminUser._id}`)
+                                        .set('Authorization', adminToken)
+                                        .send(payload);
+
+                                let responseUser = response.body;
+                                expect(responseUser).toBeInstanceOf(Object);
+                                expect(responseUser).toHaveProperty('name', depurator.depurateName(payload.name));
+                                expect(responseUser).toHaveProperty('surname', depurator.depurateSurname(adminUser.surname));
+                                expect(responseUser).toHaveProperty('username', depurator.depurateUsername(adminUser.username));
+                                expect(responseUser).toHaveProperty('email', depurator.depurateEmail(adminUser.email));
+                                expect(responseUser).not.toHaveProperty('password');
+                                expect(responseUser).toHaveProperty('role', adminUser.role);
+                                expect(responseUser).toHaveProperty('_id', adminUser._id.toString());
+                                expect(responseUser).toHaveProperty('updatedAt');
+                                expect(responseUser).toHaveProperty('createdAt');
+
+                        });
+
+
+                        test("update user invalid name", async () => {
+                                let nameB = ")testerB";
+
+                                let payload = {
+                                        name: nameB
+                                }
+
+                                const response = await request(app)
+                                        .patch(`/api/users/${adminUser._id}`)
+                                        .set('Authorization', adminToken)
+                                        .send(payload);
+
+                                let body = response.body;
+                                expect(body).toEqual(errors.errorFound(""));
+
+                        });
+
+                        test("update user surname", async () => {
+                                let surnameB = "mysuperuserB";
+
+                                let payload = {
+                                        surname: surnameB,
+                                }
+
+                                const response = await request(app)
+                                        .patch(`/api/users/${adminUser._id}`)
+                                        .set('Authorization', adminToken)
+                                        .send(payload);
+
+                                let responseUser = response.body;
+                                expect(responseUser).toBeInstanceOf(Object);
+                                expect(responseUser).toHaveProperty('name', depurator.depurateName(adminUser.name));
+                                expect(responseUser).toHaveProperty('surname', depurator.depurateSurname(payload.surname));
+                                expect(responseUser).toHaveProperty('username', depurator.depurateUsername(adminUser.username));
+                                expect(responseUser).toHaveProperty('email', depurator.depurateEmail(adminUser.email));
+                                expect(responseUser).not.toHaveProperty('password');
+                                expect(responseUser).toHaveProperty('role', adminUser.role);
+                                expect(responseUser).toHaveProperty('_id', adminUser._id.toString());
+                                expect(responseUser).toHaveProperty('updatedAt');
+                                expect(responseUser).toHaveProperty('createdAt');
+
+                        });
+
+                        test("update user invalid surname", async () => {
+                                let surnameB = "mysuperus.erB";
+
+                                let payload = {
+                                        surname: surnameB,
+                                }
+
+                                const response = await request(app)
+                                        .patch(`/api/users/${adminUser._id}`)
+                                        .set('Authorization', adminToken)
+                                        .send(payload);
+
+                                let body = response.body;
+                                expect(body).toEqual(errors.errorFound(""));
+
+                        });
+
+                        test("update user username", async () => {
+                                let usernameB = "supertesterB";
+
+                                let payload = {
+                                        username: usernameB
+                                }
+
+                                const response = await request(app)
+                                        .patch(`/api/users/${adminUser._id}`)
+                                        .set('Authorization', adminToken)
+                                        .send(payload);
+
+                                let responseUser = response.body;
+                                expect(responseUser).toBeInstanceOf(Object);
+                                expect(responseUser).toHaveProperty('name', depurator.depurateName(adminUser.name));
+                                expect(responseUser).toHaveProperty('surname', depurator.depurateSurname(adminUser.surname));
+                                expect(responseUser).toHaveProperty('username', depurator.depurateUsername(payload.username));
+                                expect(responseUser).toHaveProperty('email', depurator.depurateEmail(adminUser.email));
+                                expect(responseUser).not.toHaveProperty('password');
+                                expect(responseUser).toHaveProperty('role', adminUser.role);
+                                expect(responseUser).toHaveProperty('_id', adminUser._id.toString());
+                                expect(responseUser).toHaveProperty('updatedAt');
+                                expect(responseUser).toHaveProperty('createdAt');
+
+                        });
+
+                        test("update user invalid username", async () => {
+                                let usernameB = "superte@sterB";
+
+                                let payload = {
+                                        username: usernameB
+                                }
+
+                                const response = await request(app)
+                                        .patch(`/api/users/${adminUser._id}`)
+                                        .set('Authorization', adminToken)
+                                        .send(payload);
+
+                                let body = response.body;
+                                expect(body).toEqual(errors.errorFound(""));
+
+                        });
+
+
+                        test("update user email", async () => {
+                                let emailB = "testerb@test.com";
+
+                                let payload = {
+                                        email: emailB
+                                }
+
+                                const response = await request(app)
+                                        .patch(`/api/users/${adminUser._id}`)
+                                        .set('Authorization', adminToken)
+                                        .send(payload);
+
+                                let responseUser = response.body;
+                                expect(responseUser).toBeInstanceOf(Object);
+                                expect(responseUser).toHaveProperty('name', depurator.depurateName(adminUser.name));
+                                expect(responseUser).toHaveProperty('surname', depurator.depurateSurname(adminUser.surname));
+                                expect(responseUser).toHaveProperty('username', depurator.depurateUsername(adminUser.username));
+                                expect(responseUser).toHaveProperty('email', depurator.depurateEmail(payload.email));
+                                expect(responseUser).not.toHaveProperty('password');
+                                expect(responseUser).toHaveProperty('role', adminUser.role);
+                                expect(responseUser).toHaveProperty('_id', adminUser._id.toString());
+                                expect(responseUser).toHaveProperty('updatedAt');
+                                expect(responseUser).toHaveProperty('createdAt');
+
+                        });
+
+                        test("update user invalid email", async () => {
+                                let emailB = "testerb test.com";
+
+                                let payload = {
+                                        email: emailB
+                                }
+
+                                const response = await request(app)
+                                        .patch(`/api/users/${adminUser._id}`)
+                                        .set('Authorization', adminToken)
+                                        .send(payload);
+
+                                let body = response.body;
+                                expect(body).toEqual(errors.errorFound(""));
+
+                        });
+
+                        test("update user role", async () => {
+
+                                let payload = {
+                                        role: ROLE.BASIC
+                                }
+
+                                const response = await request(app)
+                                        .patch(`/api/users/${adminUser._id}`)
+                                        .set('Authorization', adminToken)
+                                        .send(payload);
+
+                                let responseUser = response.body;
+                                expect(responseUser).toBeInstanceOf(Object);
+                                expect(responseUser).toHaveProperty('name', depurator.depurateName(adminUser.name));
+                                expect(responseUser).toHaveProperty('surname', depurator.depurateSurname(adminUser.surname));
+                                expect(responseUser).toHaveProperty('username', depurator.depurateUsername(adminUser.username));
+                                expect(responseUser).toHaveProperty('email', depurator.depurateEmail(adminUser.email));
+                                expect(responseUser).not.toHaveProperty('password');
+                                expect(responseUser).toHaveProperty('role', ROLE.BASIC);
+                                expect(responseUser).toHaveProperty('_id', adminUser._id.toString());
+                                expect(responseUser).toHaveProperty('updatedAt');
+                                expect(responseUser).toHaveProperty('createdAt');
+
+                        });
+
+                        test("update user invalid role", async () => {
+
+                                let payload = {
+                                        role: "blue"
+                                }
+
+                                const response = await request(app)
+                                        .patch(`/api/users/${adminUser._id}`)
+                                        .set('Authorization', adminToken)
+                                        .send(payload);
+
+                                let body = response.body;
+                                expect(body).toEqual(errors.errorFound(""));
                         });
                 });
         });
